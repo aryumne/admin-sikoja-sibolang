@@ -9,6 +9,7 @@ const token = cookies.get("access_token");
 
 const Dashboard = Loadable(React.lazy(() => import('../../pages/main/dashboard')));
 const Sikoja = Loadable(React.lazy(() => import('../../pages/main/sikoja')));
+const DetailSikoja = Loadable(React.lazy(() => import('../../pages/main/sikoja/detail')));
 const Sibolang = Loadable(React.lazy(() => import('../../pages/main/sibolang')));
 const User = Loadable(React.lazy(() => import('../../pages/main/user')));
 const Instance = Loadable(React.lazy(() => import('../../pages/main/master/Instance')));
@@ -32,7 +33,16 @@ const MainRoutes = {
         },
         {
             path: 'sikoja',
-            element: <Sikoja />,
+            children: [
+                {
+                    path: '',
+                    element: <Sikoja />
+                },
+                {
+                    path: ':id',
+                    element: <DetailSikoja />
+                },
+            ]
         },
         {
             path: 'sibolang',
@@ -62,6 +72,7 @@ const MainRoutes = {
             path: 'status',
             element: <Status />,
         },
+
     ]
 }
 

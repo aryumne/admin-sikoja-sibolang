@@ -9,19 +9,19 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export const mainListItems = (
     <React.Fragment>
-        <ListItemButton href='dashboard'>
+        <ListItemButton href='/dashboard'>
             <ListItemIcon>
                 <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
         </ListItemButton>
-        <ListItemButton href='sikoja'>
+        <ListItemButton href='/sikoja'>
             <ListItemIcon>
                 <AssessmentIcon />
             </ListItemIcon>
             <ListItemText primary="SIKOJA" />
         </ListItemButton>
-        <ListItemButton href='sibolang'>
+        <ListItemButton href='/sibolang'>
             <ListItemIcon>
                 <AssessmentIcon />
             </ListItemIcon>
@@ -35,37 +35,37 @@ export const secondaryListItems = (
         <ListSubheader component="div" inset>
             Data Master
         </ListSubheader>
-        <ListItemButton href='instance'>
+        <ListItemButton href='/instance'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>
             <ListItemText primary="Data Instansi" />
         </ListItemButton>
-        <ListItemButton href='user'>
+        <ListItemButton href='/user'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>
             <ListItemText primary="Data Pengguna" />
         </ListItemButton>
-        <ListItemButton href='village'>
+        <ListItemButton href='/village'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>
             <ListItemText primary="Data Kampung" />
         </ListItemButton>
-        <ListItemButton href='street'>
+        <ListItemButton href='/street'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>
             <ListItemText primary="Data Jalan" />
         </ListItemButton>
-        <ListItemButton href='status'>
+        <ListItemButton href='/status'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>
             <ListItemText primary="Data Status" />
         </ListItemButton>
-        <ListItemButton href='category'>
+        <ListItemButton href='/category'>
             <ListItemIcon>
                 <SnippetFolderIcon />
             </ListItemIcon>

@@ -1,9 +1,10 @@
 import axios from "axios";
 import { Logout } from "../../utils/Auth";
 import { URLAPIROOT } from "../root";
-import { GetCookie } from "../root";
-
+import { GetCookie } from "../../utils/GetCookieToken";
 const cookie = GetCookie();
+
+
 const HTTPMAIN = () => {
     const http = axios.create({
         withCredentials: true,
@@ -15,8 +16,10 @@ const HTTPMAIN = () => {
         }
     })
     http.interceptors.response.use(response => response, error => {
-        if (error.response.status === 401 || error.response.status === 403) {
+        if (error.response.status === 401) {
             Logout()
+        } else if (error.response.status === 403) {
+            window.history.back()
         }
 
         return Promise.reject(error)

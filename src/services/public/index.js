@@ -1,7 +1,7 @@
 import axios from "axios";
 import { URLAPIROOT } from "../root";
 
-const HTTPAuth = axios.create({
+const Http = axios.create({
     withCredentials: true,
     baseURL: URLAPIROOT,
     headers: {
@@ -10,4 +10,4 @@ const HTTPAuth = axios.create({
     }
 })
 
-export default HTTPAuth
+export default Http

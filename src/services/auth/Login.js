@@ -2,6 +2,8 @@ import axios from "axios";
 import HTTPAuth from ".";
 import { URLROOT } from "../root";
 
+axios.defaults.withCredentials = true;
+
 const AuthLogin = (path, data) => {
     return new Promise((resolve, reject) => {
         axios.get(`${URLROOT}sanctum/csrf-cookie`).then(() => {
@@ -14,10 +16,11 @@ const AuthLogin = (path, data) => {
     })
 }
 
+
 const Login = (data) => AuthLogin('login', data);
 
 const APIAUTH = {
-    Login,
+    Login
 }
 
 export default APIAUTH

@@ -6,16 +6,13 @@ import Tooltip from '@mui/material/Tooltip';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import { Logout } from '../utils/Auth';
-import APILOGOUT from '../services/main/Logout';
+import APILOGOUT from '../services/main/Post';
 
 const SettingItems = () => {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [data, setData] = React.useState({
-        username: localStorage.getItem('username')
-    })
+    const data = { username: localStorage.getItem('username') }
 
 
     const handleOpenUserMenu = (event) => {
