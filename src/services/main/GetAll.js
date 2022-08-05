@@ -1,12 +1,12 @@
-import Http from "../auth";
+import HTTPMAIN from ".";
 
 const GetAll = (path) => {
     return new Promise((resolve, reject) => {
-        Http.get(path).
-            then(result => {
-                resolve(result.data);
+        HTTPMAIN().get(path)
+            .then(result => {
+                resolve(result);
             }).catch(error => {
-                reject(error.response.data);
+                reject(error);
             })
     })
 }

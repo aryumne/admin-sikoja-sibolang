@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -9,6 +9,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import APIAUTH from '../../services/auth/Login';
+import Alert from '@mui/material/Alert';
+import { SignIn } from '../../utils/Auth';
 
 const Login = () => {
 
@@ -19,6 +22,8 @@ const Login = () => {
 
     const [data, setData] = React.useState(initialUser);
     const [alert, setAlert] = React.useState(false);
+    const [message, setMessage] = React.useState(null);
+    // const [openBackdrop, setOpenBackdrop] = React.useState(false);
 
     const handleOnChange = (event) => {
         let { name, value } = event.target;
@@ -27,11 +32,14 @@ const Login = () => {
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        APIAUTH.Login(data).then(result => {
+            SignIn(result.data)
+        }).catch(error => {
+            setMessage(error.data.message)
+            setAlert(true)
+        })
     };
+
     return (
         <Card elevation={4} sx={{
             marginTop: 20,
@@ -45,6 +53,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
+                <Alert severity="error" sx={{ mt: 2, display: `${alert ? 'flex' : 'none'}` }} >{message}</Alert>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
