@@ -12,16 +12,20 @@ const GetAll = (path) => {
 }
 
 const Sikojas = () => GetAll('sikoja');
+const Instances = () => GetAll('instance');
+const Users = () => GetAll('user');
 const Villages = () => GetAll('village');
 const Streets = () => GetAll('street');
-const Users = () => GetAll('user');
-const Instances = () => GetAll('instance');
+const Categories = () => GetAll('category');
+const Status = () => GetAll('status');
 const APIGETALL = {
     Sikojas,
     Villages,
     Streets,
     Users,
-    Instances
+    Instances,
+    Categories,
+    Status,
 }
 
 export default APIGETALL

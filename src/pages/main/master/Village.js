@@ -1,8 +1,143 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import APIGETALL from '../../../services/main/GetAll';
+import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
+import { Card, CardContent, Container, Typography } from '@mui/material';
+import APIPATCH from '../../../services/main/Patch';
+import LoadingBackDrop from '../../../components/LoadingBackDrop';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import APIPOST from '../../../services/main/Post';
+
+
+const columns = [
+    { field: 'id', headerName: 'ID', width: 30, editable: false },
+    { field: 'village', headerName: 'Nama Kampung', flex: 1, editable: true },
+];
+
+function AddToolBar() {
+    const [newData, setNewData] = useState({ instance: '', district_id: 1 });
+    const [open, setOpen] = React.useState(false);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setNewData({ ...newData, [name]: value })
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        setOpen(false);
+        setOpenBackdrop(true)
+        APIPOST.NewVillage(newData).then(() => {
+            setOpenBackdrop(false)
+            window.location.reload()
+        }).catch(error => {
+            console.log(error.status)
+            setOpenBackdrop(false)
+        })
+    }
+
+    return (
+        <GridToolbarContainer>
+            <Button color="primary" startIcon={<AddIcon />} onClick={handleOpen}>
+                Kampung Baru
+            </Button>
+            <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+            <Dialog open={open} onClose={handleClose}>
+                <form onSubmit={handleSubmit}>
+                    <DialogTitle>Kampung Baru</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Masukkan nama kampung yang belum terdaftar!
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="village"
+                            name="village"
+                            label="nama kampung"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            onChange={handleChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Batal</Button>
+                        <Button type='submit'>Simpan</Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
+        </GridToolbarContainer>
+    );
+}
 
 const Village = () => {
+    const [villages, setVillages] = useState([]);
+    const [data, setData] = useState({ village: '', district_id: 1 });
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+
+
+    useEffect(() => {
+        APIGETALL.Villages().then(result => {
+            setVillages(result)
+        }).catch(error => {
+            console.log(error.message)
+        })
+    }, [])
+
+    const onEditCommit = (id) => {
+        setOpenBackdrop(true)
+        APIPATCH.UpdateVillage(id, data).then(() => {
+            setOpenBackdrop(false)
+        }).catch(error => {
+            setOpenBackdrop(false)
+            console.log(error.status)
+        })
+    }
     return (
-        <div>Village</div>
+        <Container maxWidth='md'>
+            <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+            <Card>
+                <CardContent>
+                    <Typography variant='h5' fontWeight='bold' paragraph>
+                        Daftar Nama Kampung
+                    </Typography>
+                    <div style={{ height: '73vh', width: '100%' }}>
+                        <DataGrid
+                            editMode='row'
+                            rows={villages}
+                            columns={columns}
+                            pageSize={10}
+                            rowsPerPageOptions={[10]}
+                            onEditCellPropsChange={(params) => {
+                                setData({ ...data, village: params.props.value })
+                                console.log(data)
+                            }}
+                            onRowEditCommit={onEditCommit}
+                            components={{
+                                Toolbar: AddToolBar,
+                            }}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        </Container>
     )
 }
 
