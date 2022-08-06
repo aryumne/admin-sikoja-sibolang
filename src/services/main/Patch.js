@@ -18,6 +18,7 @@ const UpdateVillage = (id, data) => Patch('village/' + id, data);
 const UpdateStreet = (id, data) => Patch('street/' + id, data);
 const UpdateStatus = (id, data) => Patch('status/' + id, data);
 const UpdateCategory = (id, data) => Patch('category/' + id, data);
+const UpdateUser = (id, data) => Patch('user/' + id, data);
 const APIPATCH = {
     UpdateStatusSikoja,
     UpdateDisposition,
@@ -25,7 +26,8 @@ const APIPATCH = {
     UpdateVillage,
     UpdateStreet,
     UpdateStatus,
-    UpdateCategory
+    UpdateCategory,
+    UpdateUser
 }
 
 export default APIPATCH

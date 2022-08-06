@@ -13,12 +13,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import LoadSkeleton from './LoadSkeleton';
 import MainData from './MainData';
 import GalerySikoja from './GalerySikoja';
 import ModalDisposisi from './ModalDisposisi';
 import ModalUpdateInstance from './ModalUpdateInstance';
+import ModalTindakLanjut from './ModalTindakLanjut';
 
 
 const DetailSikoja = () => {
@@ -175,19 +175,23 @@ const DetailSikoja = () => {
                                                             />
                                                         </ListItem>
                                                     </List>
+                                                    <ModalTindakLanjut disId={dis.id} instanceId={disp} description={dis.description} status={item.status_id} />
                                                 </div>
                                             )
                                         } else {
                                             return (
-                                                <Typography variant='subtitle1' key={dis}>
-                                                    Laporan belum ditindaklanjuti
-                                                </Typography>
+                                                <div key={dis.id}>
+                                                    <Typography variant='subtitle1' key={dis}>
+                                                        Laporan belum ditindaklanjuti 1
+                                                    </Typography>
+                                                    <ModalTindakLanjut disId={dis.id} description={dis.description} status={item.status_id} />
+                                                </div>
                                             )
                                         }
                                     })
                                 ) : (
                                     <Typography variant='subtitle1' >
-                                        Laporan belum ditindaklanjuti
+                                        Laporan belum ditindaklanjuti 2
                                     </Typography>
                                 )}
                             </CardContent>

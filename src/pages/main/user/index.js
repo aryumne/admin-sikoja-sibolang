@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import APIGETALL from '../../../services/main/GetAll';
-import { DataGrid, GridToolbarContainer } from '@mui/x-data-grid';
+import { DataGrid, GridToolbarContainer, GridActionsCellItem } from '@mui/x-data-grid';
 import APIPATCH from '../../../services/main/Patch';
 import LoadingBackDrop from '../../../components/LoadingBackDrop';
 import Button from '@mui/material/Button';
@@ -21,16 +21,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import APIDELETE from '../../../services/main/Delete';
 
-
-const columns = [
-    { field: 'id', headerName: 'ID', width: 30, hide: true, editable: false },
-    { field: 'name', headerName: 'Nama Pengguna', flex: 1, editable: false  },
-    { field: 'username', headerName: 'Username', flex: 1, editable: false  },
-    { field: 'email', headerName: 'Email', flex: 1, editable: false  },
-    { field: 'instance', headerName: 'Asal Instansi', flex: 1, valueGetter: (params) => `${params.row.instance.instance}` },
-    { field: 'role', headerName: 'Level Pengguna', flex: 1, valueGetter: (params) => `${params.row.role.role}` },
-];
 
 function AddToolBar(props) {
     const initialzeUser = {
@@ -42,7 +35,6 @@ function AddToolBar(props) {
         email: "",
         password: "",
         password_confirmation: ""
-
     }
 
     const { instances } = props;
@@ -79,7 +71,6 @@ function AddToolBar(props) {
         const { name, value } = event.target;
         setNewData({ ...newData, [name]: value })
         setErrorstatus(false)
-
     }
 
     const handleChangePassword = (event) => {
@@ -225,10 +216,29 @@ function AddToolBar(props) {
 }
 
 const User = () => {
+    const initialzeUser = {
+        name: "",
+        username: "",
+        hp: "",
+        role_id: 3,
+        instance_id: null,
+        email: "",
+        password: "",
+        password_confirmation: ""
+    }
     const [users, setUsers] = useState([]);
     const [instances, setInstances] = useState([]);
-    const [data, setData] = useState({ instance: '' });
+    const [data, setData] = useState(initialzeUser);
     const [openBackdrop, setOpenBackdrop] = useState(false);
+    const [message, setMessage] = useState('Data telah diupdate!');
+    const [status, setStatus] = useState(true);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [id, setId] = useState(null);
+
+    const handleClose = () => {
+        setOpenDialog(false);
+    };
 
     useEffect(() => {
         APIGETALL.Instances().then(result => {
@@ -248,16 +258,95 @@ const User = () => {
 
     const onEditCommit = (id) => {
         setOpenBackdrop(true)
-        APIPATCH.UpdateInstance(id, data).then(() => {
+        APIPATCH.UpdateUser(id, data).then(() => {
             setOpenBackdrop(false)
+            setOpenSnackbar(true)
         }).catch(error => {
+            setMessage('Gagal menyimpan perubahan!')
+            setStatus(false)
+            setOpenSnackbar(true)
             setOpenBackdrop(false)
-            console.log(error.status)
+
         })
     }
+
+    const handleDeleteClick = (id) => () => {
+        setId(id);
+        setOpenDialog(true);
+    };
+
+    const handleDeleteOk = () => {
+        setOpenDialog(false)
+        setOpenBackdrop(true)
+        APIDELETE.DeleteUser(id).then(() => {
+            setUsers(users.filter((user) => user.id !== id));
+            setMessage('Data user telah dihapus!')
+            setStatus(true)
+            setOpenSnackbar(true)
+            setOpenBackdrop(false)
+        }).catch(() => {
+            setMessage('Gagal menyimpan perubahan!')
+            setStatus(false)
+            setOpenSnackbar(true)
+            setOpenBackdrop(false)
+        })
+    };
+
+
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 30, hide: true, editable: false },
+        { field: 'name', headerName: 'Nama Pengguna', flex: 1, editable: true },
+        { field: 'username', headerName: 'Username', flex: 1, editable: true },
+        { field: 'email', headerName: 'Email', flex: 1, editable: true },
+        { field: 'instance', headerName: 'Asal Instansi', flex: 1, valueGetter: (params) => `${params.row.instance.instance}` },
+        { field: 'role', headerName: 'Level Pengguna', flex: 1, valueGetter: (params) => `${params.row.role.role}` },
+        {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 100,
+            cellClassName: 'actions',
+            getActions: ({ id }) => {
+                return [
+                    <GridActionsCellItem
+                        icon={<DeleteIcon />}
+                        label="Delete"
+                        onClick={handleDeleteClick(id)}
+                        color="error"
+                    />,
+                ];
+            },
+        },
+    ];
+
     return (
         <Container maxWidth='lg'>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={1000}
+            >
+                <Alert severity={status ? 'success' : 'error'} sx={{ width: '100%' }} onClose={() => setOpenSnackbar(false)}>
+                    {message}
+                </Alert>
+            </Snackbar>
+
+            <Dialog
+                open={openDialog}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Apakah pengguna ini akan dihapus?
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)}>Batal</Button>
+                    <Button onClick={handleDeleteOk} autoFocus>
+                        Hapus
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Card>
                 <CardContent>
                     <Typography variant='h5' fontWeight='bold' paragraph>
@@ -265,13 +354,13 @@ const User = () => {
                     </Typography>
                     <div style={{ height: '73vh', width: '100%' }}>
                         <DataGrid
-                            editMode='cell'
+                            editMode='row'
                             rows={users}
                             columns={columns}
                             pageSize={10}
                             rowsPerPageOptions={[10]}
                             onEditCellPropsChange={(params) => {
-                                setData({ instance: params.props.value })
+                                setData({ ...data, [params.field]: params.props.value })
                                 console.log(data)
                             }}
                             onRowEditCommit={onEditCommit}
