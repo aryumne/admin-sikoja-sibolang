@@ -22,6 +22,11 @@ import APIGETALL from '../../../../services/main/GetAll';
 import Autocomplete from '@mui/material/Autocomplete';
 import APIPOST from '../../../../services/main/Post';
 import APIPATCH from '../../../../services/main/Patch';
+import Skeleton from '@mui/material/Skeleton';
+import LoadingBackDrop from '../../../../components/LoadingBackDrop';
+import LoadSkeleton from './LoadSkeleton';
+import MainData from './MainData';
+import GalerySikoja from './GalerySikoja';
 
 
 const style = {
@@ -47,7 +52,9 @@ const DetailSikoja = () => {
     const [disp, setDisp] = useState([]);
     const [instances, setInstances] = useState([]);
     const [data, setData] = useState({ instance_id: null, sikoja_id: null })
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -66,6 +73,7 @@ const DetailSikoja = () => {
     useEffect(() => {
         APIGETONE.GetSikoja(params.id).then(result => {
             setSikoja(result)
+            setIsLoading(false)
             setData({ ...data, sikoja_id: result[0].id })
         }).catch(error => {
             console.log(error)
@@ -95,6 +103,8 @@ const DetailSikoja = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setOpen(false)
+        setOpenBackdrop(true)
         APIPOST.StoreDispo(data).then(() => {
             console.log(data);
         }).then(() => {
@@ -103,186 +113,110 @@ const DetailSikoja = () => {
             })
         }).catch(error => {
             console.log(error.status)
+            setOpenBackdrop(false)
         })
     }
+
     return (
         <>
-            {sikoja.map((item) => (
-                <Grid key={item.id} container spacing={1} rowSpacing={1}>
-                    <Grid item lg={5} md={6} sm={12} >
-                        <Card>
-                            <CardContent>
-                                <Stack direction="row" spacing={1} alignItems='center'>
-                                    <Typography variant='h6' fontWeight='bold' >
-                                        Detail Laporan
+            {!isLoading ? (
+                sikoja.map((item) => (
+                    <Grid key={item.id} container spacing={1} rowSpacing={1}>
+                        <Grid item lg={5} md={6} sm={12} >
+                            <Card>
+                                <CardContent>
+                                    <Stack direction="row" spacing={1} alignItems='center'>
+                                        <Typography variant='h6' fontWeight='bold' >
+                                            Detail Laporan
+                                        </Typography>
+                                        <Chip label={item.status.statuse || ''} color={colorChip(item.status_id)} variant="contained" size='small' />
+                                    </Stack>
+                                    <Typography variant='subtitle1' fontStyle='italic'>
+                                        {Moment(item.created_at)}
                                     </Typography>
-                                    <Chip label={item.status.statuse || ''} color={colorChip(item.status_id)} variant="contained" size='small' />
-                                </Stack>
-                                <Typography variant='subtitle2' fontStyle='italic'>
-                                    {Moment(item.created_at)}
-                                </Typography>
-                                <List>
-                                    <ListItem>
-                                        <ListItemText
-                                            primary={
-                                                <Typography varian="body1" fontWeight='medium'>
-                                                    Nama Pelapor
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography
-                                                    sx={{ display: 'inline' }}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                    {item.name} - {item.hp}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <Divider />
-                                    <ListItem>
-                                        <ListItemText
-                                            primary={
-                                                <Typography varian="body1" fontWeight='medium'>
-                                                    Judul Laporan
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography
-                                                    sx={{ display: 'inline' }}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                    {item.title}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <Divider />
-                                    <ListItem >
-                                        <ListItemText
-                                            primary={
-                                                <Typography varian="body1" fontWeight='medium'>
-                                                    Keterangan Laporan
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography
-                                                    sx={{ display: 'inline' }}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                    {item.description}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <Divider />
-                                    <ListItem>
-                                        <ListItemText
-                                            primary={
-                                                <Typography varian="body1" fontWeight='medium'>
-                                                    Alamat Kampung
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography
-                                                    sx={{ display: 'inline' }}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                    {item.village.village}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <Divider />
-                                    <ListItem>
-                                        <ListItemText
-                                            primary={
-                                                <Typography varian="body1" fontWeight='medium'>
-                                                    Nama Jalan
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography
-                                                    sx={{ display: 'inline' }}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                    {item.street ? item.street.street : 'tidak ada'}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <Divider />
-                                </List>
-                            </CardContent>
-                            <CardActions sx={{ p: 2, mt: 0, pt: 0 }}>
-                                <Button variant='contained' disabled={item.status_id === 1 ? false : true} onClick={handleOpen}>
-                                    {item.status_id === 1 ? 'Disposisikan' : 'Sudah didisposisikan'}
-                                </Button>
-                            </CardActions>
-                        </Card>
-                        <Card sx={{ mt: 1 }}>
-                            {disp.map((dis) => (
-                                <CardContent key={dis}>
+                                    <MainData item={item} />
+                                </CardContent>
+                                <CardActions sx={{ p: 2, mt: 0, pt: 0 }}>
+                                    <Button variant='contained' disabled={item.status_id === 1 ? false : true} onClick={handleOpen}>
+                                        {item.status_id === 1 ? 'Disposisikan' : 'Sudah didisposisikan'}
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                            <Card sx={{ mt: 1 }}>
+                                <CardContent>
                                     <Typography variant='h6' fontWeight='bold' >
                                         Laporan Didisposisikan
                                     </Typography>
-                                    <Typography variant='subtitle2' fontStyle='italic'>
-                                        {Moment(disp[0].created_at)}
-                                    </Typography>
-                                    <Divider />
-                                    <List>
-                                        <ListItem>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography varian="body1" fontWeight='medium'>
-                                                        Nama Instansi
-                                                    </Typography>
-                                                }
-                                                secondary={
-                                                    <Typography
-                                                        sx={{ display: 'inline' }}
-                                                        component="span"
-                                                        variant="body2"
-                                                        color="text.primary"
-                                                    >
-                                                        {dis.instance ? dis.instance.instance : 'Belum ada'}
-                                                    </Typography>
-                                                }
-                                            />
-                                        </ListItem>
-                                    </List>
+                                    {disp === 0 ? (
+                                        disp.map((dis) => (
+                                            <>
+                                                <Typography variant='subtitle1' fontStyle='italic'>
+                                                    {Moment(disp[0].created_at)}
+                                                </Typography>
+                                                <Divider />
+                                                <List>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography varian="body1" fontWeight='medium'>
+                                                                    Nama Instansi
+                                                                </Typography>
+                                                            }
+                                                            secondary={
+                                                                <Typography
+                                                                    sx={{ display: 'inline' }}
+                                                                    component="span"
+                                                                    variant="body2"
+                                                                    color="text.primary"
+                                                                >
+                                                                    {dis.instance ? dis.instance.instance : 'Belum ada'}
+                                                                </Typography>
+                                                            }
+                                                        />
+                                                    </ListItem>
+                                                </List></>
+                                        ))
+                                    ) : (
+                                        <Typography variant='subtitle1' >
+                                            Laporan belum didisposisikan
+                                        </Typography>
+                                    )}
                                 </CardContent>
-                            ))}
-                        </Card>
-                    </Grid>
-                    <Grid item lg={7} md={6} sm={12} >
-                        <Card>
-                            <CardContent>
-                                <Typography variant='h6' fontWeight='bold' >
-                                    Laporan Disposisikan
-                                </Typography>
-                                <Typography variant='subtitle2' fontStyle='italic'>
-                                    {Moment(item.created_at)}
-                                </Typography>
-                                <List>
-
-                                </List>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid >
-            ))
+                            </Card>
+                        </Grid>
+                        <Grid item lg={7} md={6} sm={12} >
+                            <Card>
+                                <CardContent>
+                                    <Typography variant='h6' fontWeight='bold' >
+                                        Galery Laporan
+                                    </Typography>
+                                    <GalerySikoja item={item.galery} />
+                                </CardContent>
+                            </Card>
+                            <Card sx={{ mt: 1 }}>
+                                <CardContent>
+                                    <Typography variant='h6' fontWeight='bold' >
+                                        Dokumentasi TindakLanjut
+                                    </Typography>
+                                    {disp === 0 ? (
+                                        disp.map((dis) => (
+                                            <GalerySikoja key={dis} item={dis.file} />
+                                        ))
+                                    ) : (
+                                        <Typography variant='subtitle1' >
+                                            Belum ada progress
+                                        </Typography>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid >
+                )))
+                : (
+                    <LoadSkeleton />
+                )
             }
+            <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
             <Modal
                 open={open}
                 onClose={handleClose}
