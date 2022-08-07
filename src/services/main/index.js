@@ -19,7 +19,7 @@ const HTTPMAIN = () => {
         if (error.response.status === 401) {
             Logout()
         } else if (error.response.status === 403) {
-            window.history.back()
+            window.location.replace('/forbidden')
         }
 
         return Promise.reject(error)

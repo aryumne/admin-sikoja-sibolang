@@ -106,9 +106,12 @@ const Instance = () => {
 
 
   useEffect(() => {
+    setOpenBackdrop(true)
     APIGETALL.Instances().then(result => {
       setInstances(result)
+      setOpenBackdrop(false)
     }).catch(error => {
+      setOpenBackdrop(false)
       console.log(error.message)
     })
   }, [])

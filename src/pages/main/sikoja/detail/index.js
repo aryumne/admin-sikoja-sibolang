@@ -27,6 +27,7 @@ const DetailSikoja = () => {
     const [disp, setDisp] = useState([]);
     const [data, setData] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
+    const roleId = localStorage.getItem('role');
 
     const colorChip = (id) => {
         let color = 'error';
@@ -75,16 +76,18 @@ const DetailSikoja = () => {
                                 </Typography>
                                 <MainData item={item} />
                             </CardContent>
-                            <CardActions sx={{ p: 2, mt: 0, pt: 0 }}>
-                                <ModalDisposisi status={item.status.id} instanceid={data} />
-                            </CardActions>
+                            {roleId <= 2 ? (
+                                <CardActions sx={{ p: 2, mt: 0, pt: 0 }}>
+                                    <ModalDisposisi status={item.status.id} instanceid={data} />
+                                </CardActions>
+                            ) : ''}
                         </Card>
                         <Card sx={{ mt: 1 }}>
                             <CardContent>
                                 <Typography variant='h6' fontWeight='bold' >
                                     Laporan Didisposisikan
                                 </Typography>
-                                {disp !== null ? (
+                                {disp.length !== 0 ? (
                                     disp.map((dis) => (
                                         <div key={dis} >
                                             <Typography variant='subtitle1' fontStyle='italic'>
@@ -111,7 +114,9 @@ const DetailSikoja = () => {
                                                     />
                                                 </ListItem>
                                             </List>
-                                            <ModalUpdateInstance disId={dis.id} instanceId={disp} description={dis.description} />
+                                            {roleId <= 2 ? (
+                                                <ModalUpdateInstance disId={dis.id} instanceId={disp} description={dis.description} />
+                                            ) : ''}
                                         </div>
                                     ))
                                 ) : (
@@ -126,7 +131,7 @@ const DetailSikoja = () => {
                                 <Typography variant='h6' fontWeight='bold' >
                                     Detail Tindaklanjut
                                 </Typography>
-                                {disp !== null ? (
+                                {disp.length !== 0 ? (
                                     disp.map((dis) => {
                                         if (dis.description !== null) {
                                             return (
@@ -175,23 +180,31 @@ const DetailSikoja = () => {
                                                             />
                                                         </ListItem>
                                                     </List>
-                                                    <ModalTindakLanjut disId={dis.id} sikojaId={item.id} start={dis.start_date} estimation={dis.estimation_date} description={dis.description} status={item.status_id} />
+                                                    {
+                                                        roleId != 2 ? (
+                                                            <ModalTindakLanjut dispFiles={dis.file.length} disId={dis.id} instanceID={dis.isntance_id} sikojaId={item.id} start={dis.start_date} estimation={dis.estimation_date} description={dis.description} status={item.status_id} />
+                                                        ) : ''
+                                                    }
                                                 </div>
                                             )
                                         } else {
                                             return (
                                                 <div key={dis.id}>
                                                     <Typography variant='subtitle1' key={dis}>
-                                                        Laporan belum ditindaklanjuti 1
+                                                        Laporan belum ditindaklanjuti
                                                     </Typography>
-                                                    <ModalTindakLanjut disId={dis.id} sikojaId={item.id} description={dis.description} status={item.status_id} />
+                                                    {
+                                                        roleId != 2 ? (
+                                                            <ModalTindakLanjut dispFiles={dis.file.length} instanceID={dis.isntance_id} disId={dis.id} sikojaId={item.id} description={dis.description} status={item.status_id} />
+                                                        ) : ''
+                                                    }
                                                 </div>
                                             )
                                         }
                                     })
                                 ) : (
                                     <Typography variant='subtitle1' >
-                                        Laporan belum ditindaklanjuti 2
+                                        Laporan belum ditindaklanjuti
                                     </Typography>
                                 )}
                             </CardContent>
@@ -211,10 +224,22 @@ const DetailSikoja = () => {
                                 <Typography variant='h6' fontWeight='bold' >
                                     Dokumentasi TindakLanjut
                                 </Typography>
-                                {disp.file !== null ? (
-                                    disp.map((dis) => (
-                                        <GalerySikoja key={dis} item={dis.file} />
-                                    ))
+                                {disp.length !== 0 ? (
+                                    disp.map((dis) => {
+                                        if (dis.file.length !== 0) {
+                                            return (
+                                                disp.map((dis) => (
+                                                    <GalerySikoja key={dis} item={dis.file} />
+                                                ))
+                                            )
+                                        } else {
+                                            return (
+                                                <Typography key={dis} variant='subtitle1' >
+                                                    Belum ada progress
+                                                </Typography>
+                                            )
+                                        }
+                                    })
                                 ) : (
                                     <Typography variant='subtitle1' >
                                         Belum ada progress

@@ -106,9 +106,12 @@ const Street = () => {
 
 
     useEffect(() => {
+        setOpenBackdrop(true)
         APIGETALL.Streets().then(result => {
             setStreets(result)
+            setOpenBackdrop(false)
         }).catch(error => {
+            setOpenBackdrop(false)
             console.log(error.message)
         })
     }, [])

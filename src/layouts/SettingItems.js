@@ -9,10 +9,12 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import { Logout } from '../utils/Auth';
 import APILOGOUT from '../services/main/Post';
+import { Typography } from '@mui/material';
 
 const SettingItems = () => {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const data = { username: localStorage.getItem('username') }
+    const data = { username: localStorage.getItem('username') };
+    const name = localStorage.getItem('name');
 
 
     const handleOpenUserMenu = (event) => {
@@ -33,6 +35,9 @@ const SettingItems = () => {
 
     return (
         <Box sx={{ flexGrow: 0 }}>
+            <Typography color='inherit' sx={{ display: 'inline' }}>
+                {name}
+            </Typography>
             <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar sx={{ bgcolor: 'primary.main', m: 0 }}>

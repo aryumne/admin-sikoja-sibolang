@@ -106,9 +106,12 @@ const Village = () => {
 
 
     useEffect(() => {
+        setOpenBackdrop(true)
         APIGETALL.Villages().then(result => {
             setVillages(result)
+            setOpenBackdrop(false)
         }).catch(error => {
+            setOpenBackdrop(false)
             console.log(error.message)
         })
     }, [])

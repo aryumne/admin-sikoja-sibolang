@@ -69,6 +69,7 @@ const mdTheme = createTheme();
 
 const MainLayout = () => {
     const [open, setOpen] = React.useState(true);
+    const roleId = localStorage.getItem('role');
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -112,10 +113,14 @@ const MainLayout = () => {
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            px: [1],
+                            justifyContent: 'space-between',
+                            pr: [1],
+                            pl: 2,
                         }}
                     >
+                        <Typography variant='h6' fontWeight='bold' textTransform='uppercase' align='left'>
+                            {roleId === 1 ? 'Superadmin' : roleId === 2 ? 'Admin' : 'Instansi'}
+                        </Typography>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
@@ -124,7 +129,7 @@ const MainLayout = () => {
                     <List component="nav">
                         {mainListItems}
                         <Divider sx={{ my: 1 }} />
-                        {secondaryListItems}
+                        {roleId <= 2 ? secondaryListItems : ''}
                     </List>
                 </Drawer>
                 <Box

@@ -23,9 +23,12 @@ const Status = () => {
 
 
     useEffect(() => {
+        setOpenBackdrop(true)
         APIGETALL.Status().then(result => {
+            setOpenBackdrop(false)
             setStatuses(result)
         }).catch(error => {
+            setOpenBackdrop(false)
             console.log(error.message)
         })
     }, [])

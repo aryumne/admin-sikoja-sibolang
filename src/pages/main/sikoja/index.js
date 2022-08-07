@@ -4,6 +4,31 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Card, CardContent, Chip, Typography } from '@mui/material';
 import { Relative } from '../../../components/Moment';
 import { useNavigate } from 'react-router-dom';
+import LoadingBackDrop from '../../../components/LoadingBackDrop';
+
+const Status = (id) => {
+    const objStatus = {
+        label: 'Laporan diterima',
+        color: 'error'
+    }
+
+    if (id === 1) {
+        return objStatus
+    } else if (id === 2) {
+        objStatus.label = 'Laporan Didisposisikan'
+        objStatus.color = 'warning'
+        return objStatus
+    } else if (id === 3) {
+        objStatus.label = 'Laporan DitindakLanjuti'
+        objStatus.color = 'success'
+        return objStatus
+    } else {
+        objStatus.label = 'Selesai'
+        objStatus.color = 'primary'
+        return objStatus
+    }
+
+}
 
 const columns = [
     { field: 'id', headerName: 'ID', hide: true, width: 0, },
@@ -12,7 +37,7 @@ const columns = [
         field: 'status', headerName: 'Status', width: 200, renderCell: (params) => {
             const statusId = params.row.status_id
             return (
-                <Chip label={params.row.status.statuse || ''} color={statusId === 1 ? 'error' : statusId === 2 ? 'warning' : statusId === 3 ? 'success' : 'primary'} variant="contained" size='small' />
+                <Chip label={Status(statusId).label} color={Status(statusId).color} variant="contained" size='small' />
             )
         }
     },
@@ -25,17 +50,34 @@ const columns = [
 
 
 const Sikoja = () => {
+    const instanceId = localStorage.getItem('instance');
+    const roleId = localStorage.getItem('role');
     const navigate = useNavigate();
     const [data, setData] = useState([]);
+    const [openBackDrop, setOpenBackDrop] = useState(false);
     useEffect(() => {
-        APIGETALL.Sikojas().then(result => {
-            setData(result)
-        }).catch(error => {
-            console.log(error.message)
-        })
+        setOpenBackDrop(true)
+        if (roleId == 3) {
+            APIGETALL.SikojaDisps().then(result => {
+                const newResult = result.filter((item) => item.instance_id == instanceId).map((itm) => itm.sikoja);
+                setData(newResult);
+                console.log(newResult)
+                setOpenBackDrop(false)
+            }).catch(error => {
+                console.log(error.message)
+            })
+        } else {
+            APIGETALL.Sikojas().then(result => {
+                setData(result)
+                setOpenBackDrop(false)
+            }).catch(error => {
+                console.log(error.message)
+            })
+        }
     }, [])
     return (
         <Card >
+            <LoadingBackDrop open={openBackDrop} />
             <CardContent>
                 <Typography variant='h5' fontWeight='bold' paragraph>
                     Data Pengaduan Sikoja

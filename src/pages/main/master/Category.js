@@ -22,9 +22,12 @@ const Category = () => {
 
 
     useEffect(() => {
+        setOpenBackdrop(true)
         APIGETALL.Categories().then(result => {
             setCategories(result)
+            setOpenBackdrop(false)
         }).catch(error => {
+            setOpenBackdrop(false)
             console.log(error.message)
         })
     }, [])

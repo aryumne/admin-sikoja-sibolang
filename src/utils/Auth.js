@@ -1,4 +1,3 @@
-import { Navigate, useLocation } from 'react-router-dom';
 import { GetCookie } from "./GetCookieToken";
 import Cookies from 'universal-cookie';
 
@@ -10,10 +9,13 @@ export const SignIn = (res) => {
         window.location.href = '/verify-email'
     }
     localStorage.setItem('username', res.data.user.username)
+    localStorage.setItem('name', res.data.user.name)
+    localStorage.setItem('role', res.data.user.role_id)
+    localStorage.setItem('instance', res.data.user.instance_id)
 
     const XSRF_COOKIE = GetCookie();
     let date = new Date();
-    date.setTime(date.getTime() + (24 * 60 * 60 * 1000));
+    date.setTime(date.getTime() + (60 * 60 * 1000));
     cookie.set('access_token', XSRF_COOKIE, { expires: date });
     if (res.data.user.email_verified_at === null) {
         return window.location.href = "/verify-email"
@@ -24,7 +26,8 @@ export const SignIn = (res) => {
 
 
 export const Logout = () => {
-    cookie.remove('access_token');
+    cookie.remove('access_token', { path: '/' });
+    localStorage.clear();
     window.location.href = "/login"
 }
 

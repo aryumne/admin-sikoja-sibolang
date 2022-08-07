@@ -12,6 +12,7 @@ const GetAll = (path) => {
 }
 
 const Sikojas = () => GetAll('sikoja');
+const SikojaDisps = () => GetAll('sikojadisp');
 const Instances = () => GetAll('instance');
 const Users = () => GetAll('user');
 const Villages = () => GetAll('village');
@@ -20,6 +21,7 @@ const Categories = () => GetAll('category');
 const Status = () => GetAll('status');
 const APIGETALL = {
     Sikojas,
+    SikojaDisps,
     Villages,
     Streets,
     Users,
