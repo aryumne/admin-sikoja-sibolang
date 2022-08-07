@@ -13,7 +13,9 @@ import LoadingBackDrop from '../../../../components/LoadingBackDrop';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import moment from 'moment';
+import { Input } from '../../../../components/Moment';
 import { Stack } from '@mui/material';
+import Slide from '@mui/material/Slide';
 
 
 const style = {
@@ -33,14 +35,19 @@ const style = {
     p: 4,
 };
 
+function TransitionUp(props) {
+    return <Slide {...props} direction="up" />;
+}
+
+
 
 const ModalTindakLanjut = (props) => {
-    const { disId, description, status } = props;
+    const { disId, description, status, start, estimation, sikojaId } = props;
     const initializeDisp = {
         instance_id: disId,
         description: description,
-        start_date: moment().format(),
-        estimation_date: moment().format(),
+        start_date: start ? Input(start) : Input(moment().format()),
+        estimation_date: estimation ? Input(estimation) : Input(moment().format()),
     }
     const [data, setData] = useState(initializeDisp)
     const [open, setOpen] = useState(false);
@@ -64,9 +71,23 @@ const ModalTindakLanjut = (props) => {
         setOpen(false)
         setOpenBackdrop(true)
         APIPATCH.UpdateDisposition(disId, data).then(() => {
-            setCodeStatus(false)
+            setCodeStatus(true)
             setOpenSnackbar(true)
-            window.location.reload()
+        }).then(() => {
+            APIPATCH.UpdateStatusSikoja(sikojaId, { status_id: 3 }).then(() => {
+                setMessage('Status laporan telah diupdate')
+                setCodeStatus(true)
+                setOpenSnackbar(true)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500)
+            }).catch((error) => {
+                console.log(error)
+                setMessage('Gagal mengupdate status, coba lagi!')
+                setCodeStatus(false)
+                setOpenSnackbar(true)
+                setOpenBackdrop(false)
+            })
         }).catch((error) => {
             console.log(error)
             setMessage('Gagal menyimpan perubahan, coba lagi!')
@@ -85,6 +106,7 @@ const ModalTindakLanjut = (props) => {
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={1000}
+                TransitionComponent={TransitionUp}
             >
                 <Alert severity={codeStatus ? 'success' : 'error'} sx={{ width: '100%' }} onClose={() => setOpenSnackbar(false)}>
                     {message}
@@ -127,7 +149,7 @@ const ModalTindakLanjut = (props) => {
                                         renderInput={(params) => <TextField required {...params} />}
                                         value={data.start_date}
                                         onChange={(newValue) => {
-                                            setData({ ...data, start_date: newValue });
+                                            setData({ ...data, start_date: Input(newValue) });
                                         }}
                                     />
                                     <DateTimePicker
@@ -137,7 +159,7 @@ const ModalTindakLanjut = (props) => {
                                         renderInput={(params) => <TextField required {...params} />}
                                         value={data.estimation_date}
                                         onChange={(newValue) => {
-                                            setData({ ...data, estimation_date: newValue });
+                                            setData({ ...data, estimation_date: Input(newValue) });
                                         }}
                                     />
                                 </Stack>

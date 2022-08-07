@@ -175,7 +175,7 @@ const DetailSikoja = () => {
                                                             />
                                                         </ListItem>
                                                     </List>
-                                                    <ModalTindakLanjut disId={dis.id} instanceId={disp} description={dis.description} status={item.status_id} />
+                                                    <ModalTindakLanjut disId={dis.id} sikojaId={item.id} start={dis.start_date} estimation={dis.estimation_date} description={dis.description} status={item.status_id} />
                                                 </div>
                                             )
                                         } else {
@@ -184,7 +184,7 @@ const DetailSikoja = () => {
                                                     <Typography variant='subtitle1' key={dis}>
                                                         Laporan belum ditindaklanjuti 1
                                                     </Typography>
-                                                    <ModalTindakLanjut disId={dis.id} description={dis.description} status={item.status_id} />
+                                                    <ModalTindakLanjut disId={dis.id} sikojaId={item.id} description={dis.description} status={item.status_id} />
                                                 </div>
                                             )
                                         }

@@ -9,3 +9,7 @@ export const Relative = (dateTime) => {
 export const Format = (dateTime) => {
     return moment(dateTime).format('LL');
 }
+
+export const Input = (dateTime) => {
+    return moment(dateTime).format('YYYY-MM-DD HH:mm:ss');
+}

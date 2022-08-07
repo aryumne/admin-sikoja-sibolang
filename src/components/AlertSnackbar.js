@@ -9,6 +9,8 @@ const AlertSnackbar = (props) => {
         <Snackbar
             open={opensnackbar}
             autoHideDuration={1000}
+
+            {...props}
         >
             <Alert severity={status ? 'success' : 'error'} sx={{ width: '100%' }} onClose={() => setOpensnackbar(false)}>
                 {message}
