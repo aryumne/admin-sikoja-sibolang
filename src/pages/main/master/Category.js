@@ -4,6 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Card, CardContent, Container, Typography } from '@mui/material';
 import APIPATCH from '../../../services/main/Patch';
 import LoadingBackDrop from '../../../components/LoadingBackDrop';
+import AlertSnackbar from '../../../components/AlertSnackbar';
 
 const columns = [
     { field: 'id', headerName: 'ID', width: 30, editable: false },
@@ -11,10 +12,13 @@ const columns = [
 ];
 
 
-const Street = () => {
+const Category = () => {
     const [categories, setCategories] = useState([]);
     const [data, setData] = useState({ category: '' });
     const [openBackdrop, setOpenBackdrop] = useState(false);
+    const [message, setMessage] = useState('Data telah diupdate!');
+    const [status, setStatus] = useState(true);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
 
 
     useEffect(() => {
@@ -28,15 +32,23 @@ const Street = () => {
     const onEditCommit = (id) => {
         setOpenBackdrop(true)
         APIPATCH.UpdateCategory(id, data).then(() => {
+            setStatus(true)
             setOpenBackdrop(false)
+            setOpenSnackbar(true)
         }).catch(error => {
+            setMessage('Gagal menyimpan data, coba lagi!')
+            setStatus(false)
+            setOpenSnackbar(true)
             setOpenBackdrop(false)
-            console.log(error.status)
+            setTimeout(() => {
+                window.location.reload()
+            }, 1500)
         })
     }
     return (
         <Container maxWidth='md'>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+            <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <Card>
                 <CardContent>
                     <Typography variant='h5' fontWeight='bold' paragraph>
@@ -62,4 +74,4 @@ const Street = () => {
     )
 }
 
-export default Street
+export default Category

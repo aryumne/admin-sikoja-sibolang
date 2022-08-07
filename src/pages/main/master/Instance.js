@@ -13,6 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import APIPOST from '../../../services/main/Post';
+import AlertSnackbar from '../../../components/AlertSnackbar';
 
 
 const columns = [
@@ -24,6 +25,9 @@ function AddToolBar() {
   const [newData, setNewData] = useState({ instance: '' });
   const [open, setOpen] = React.useState(false);
   const [openBackdrop, setOpenBackdrop] = useState(false);
+  const [message, setMessage] = useState('Data berhasil ditambahkan!');
+  const [status, setStatus] = useState(true);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -45,8 +49,12 @@ function AddToolBar() {
     APIPOST.NewInstance(newData).then(() => {
       setOpenBackdrop(false)
       window.location.reload()
+      setStatus(true)
+      setOpenSnackbar(true)
     }).catch(error => {
-      console.log(error.status)
+      setMessage('Gagal menyimpan data, coba lagi!')
+      setStatus(false)
+      setOpenSnackbar(true)
       setOpenBackdrop(false)
     })
   }
@@ -57,6 +65,7 @@ function AddToolBar() {
         Instansi Baru
       </Button>
       <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+      <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit}>
           <DialogTitle>Instansi Baru</DialogTitle>
@@ -91,6 +100,9 @@ const Instance = () => {
   const [instances, setInstances] = useState([]);
   const [data, setData] = useState({ instance: '' });
   const [openBackdrop, setOpenBackdrop] = useState(false);
+  const [message, setMessage] = useState('Data telah diupdate!');
+  const [status, setStatus] = useState(true);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
 
   useEffect(() => {
@@ -104,15 +116,23 @@ const Instance = () => {
   const onEditCommit = (id) => {
     setOpenBackdrop(true)
     APIPATCH.UpdateInstance(id, data).then(() => {
+      setStatus(true)
+      setOpenSnackbar(true)
       setOpenBackdrop(false)
     }).catch(error => {
+      setMessage('Gagal menyimpan data, coba lagi!')
+      setStatus(false)
+      setOpenSnackbar(true)
       setOpenBackdrop(false)
-      console.log(error.status)
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     })
   }
   return (
     <Container maxWidth='md'>
       <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+      <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
       <Card>
         <CardContent>
           <Typography variant='h5' fontWeight='bold' paragraph>

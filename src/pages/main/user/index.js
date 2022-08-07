@@ -19,10 +19,9 @@ import APIPOST from '../../../services/main/Post';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import APIDELETE from '../../../services/main/Delete';
+import AlertSnackbar from '../../../components/AlertSnackbar';
 
 
 function AddToolBar(props) {
@@ -40,10 +39,9 @@ function AddToolBar(props) {
     const { instances } = props;
     const [newData, setNewData] = useState(initialzeUser);
     const [instance, setInstance] = useState('');
-    const [errormessage, setErrormessage] = useState('Pengguna baru berhasil ditambahkan!');
-    const [errorstatus, setErrorstatus] = useState(201);
+    const [message, setMessage] = useState('Pengguna baru berhasil ditambahkan!');
+    const [status, setStatus] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [role, setRole] = useState(3);
     const [open, setOpen] = React.useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
 
@@ -59,24 +57,24 @@ function AddToolBar(props) {
         const { value } = event.target;
         setInstance(value);
         setNewData({ ...newData, instance_id: value })
-        setErrorstatus(false)
+        setStatus(false)
     };
     const handleSelectedRole = (event) => {
         const { value } = event.target;
         setNewData({ ...newData, role_id: value })
-        setErrorstatus(false)
+        setStatus(false)
     };
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setNewData({ ...newData, [name]: value })
-        setErrorstatus(false)
+        setStatus(false)
     }
 
     const handleChangePassword = (event) => {
         const { value } = event.target;
         setNewData({ ...newData, password: value, password_confirmation: value })
-        setErrorstatus(false)
+        setStatus(false)
     }
 
     const handleSubmit = (event) => {
@@ -84,13 +82,16 @@ function AddToolBar(props) {
         setOpen(false);
         setOpenBackdrop(true)
         APIPOST.NewUser(newData).then(() => {
-            setOpenSnackbar(true)
+            setStatus(true)
             setOpenBackdrop(false)
-            window.location.reload()
+            setOpenSnackbar(true)
+            setTimeout(() => {
+                window.location.reload()
+            }, 1500)
         }).catch(error => {
             setOpenSnackbar(true)
-            setErrorstatus(error.status)
-            setErrormessage('Gagal menyimpan, Coba lagi!')
+            setStatus(false)
+            setMessage('Gagal menyimpan, Coba lagi!')
             setOpenBackdrop(false)
         })
     }
@@ -100,14 +101,7 @@ function AddToolBar(props) {
             <Button color="primary" startIcon={<AddIcon />} onClick={handleOpen}>
                 Pengguna Baru
             </Button>
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={1000}
-            >
-                <Alert severity={errorstatus === 201 ? 'success' : 'error'} sx={{ width: '100%' }} onClose={() => setOpenSnackbar(false)}>
-                    {errormessage}
-                </Alert>
-            </Snackbar>
+            <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
             <Dialog scroll='body' fullWidth aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description" maxWidth='sm' open={open} onClose={handleClose}>
@@ -186,7 +180,6 @@ function AddToolBar(props) {
                             required
                             labelId="instance"
                             id="demo-simple-select"
-                            value={role}
                             onChange={handleSelectedRole}
                         >
                             <MenuItem value={2}>Admin SIKOJA-SIBOLANG</MenuItem>
@@ -259,6 +252,7 @@ const User = () => {
     const onEditCommit = (id) => {
         setOpenBackdrop(true)
         APIPATCH.UpdateUser(id, data).then(() => {
+            setStatus(true)
             setOpenBackdrop(false)
             setOpenSnackbar(true)
         }).catch(error => {
@@ -266,7 +260,6 @@ const User = () => {
             setStatus(false)
             setOpenSnackbar(true)
             setOpenBackdrop(false)
-
         })
     }
 
@@ -322,15 +315,7 @@ const User = () => {
     return (
         <Container maxWidth='lg'>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={1000}
-            >
-                <Alert severity={status ? 'success' : 'error'} sx={{ width: '100%' }} onClose={() => setOpenSnackbar(false)}>
-                    {message}
-                </Alert>
-            </Snackbar>
-
+            <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <Dialog
                 open={openDialog}
                 onClose={handleClose}
