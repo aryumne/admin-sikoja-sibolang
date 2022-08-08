@@ -10,6 +10,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import APIPOST from '../../../../services/main/Post';
 import APIPATCH from '../../../../services/main/Patch';
 import LoadingBackDrop from '../../../../components/LoadingBackDrop';
+import AlertSnackbar from '../../../../components/AlertSnackbar';
 
 
 const style = {
@@ -36,6 +37,9 @@ const ModalDisposisi = (props) => {
     const [data, setData] = useState({ instance_id: null, sikoja_id: instanceid })
     const [open, setOpen] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
+    const [message, setMessage] = useState('Disposisi laporan berhasil!');
+    const [statusAddPosisi, setStatusAddPosisi] = useState(true);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -50,7 +54,6 @@ const ModalDisposisi = (props) => {
     const handleOnSelected = (event, newValue) => {
         const id = newValue.id;
         setData({ ...data, instance_id: id })
-        console.log(data);
     }
 
     const handleSubmit = (event) => {
@@ -58,13 +61,21 @@ const ModalDisposisi = (props) => {
         setOpen(false)
         setOpenBackdrop(true)
         APIPOST.StoreDispo(data).then(() => {
-            console.log(data);
+            setStatusAddPosisi(true)
+            setOpenSnackbar(true)
         }).then(() => {
             APIPATCH.UpdateStatusSikoja(data.sikoja_id, { status_id: 2 }).then(() => {
-                window.location.reload()
+                setMessage('Status Laporan update!')
+                setStatusAddPosisi(true)
+                setOpenSnackbar(true)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500)
             })
-        }).catch(error => {
-            console.log(error.status)
+        }).catch(() => {
+            setMessage('Gagal menyimpan data, coba lagi!')
+            setStatusAddPosisi(false)
+            setOpenSnackbar(true)
             setOpenBackdrop(false)
         })
     }
@@ -75,6 +86,7 @@ const ModalDisposisi = (props) => {
                 {status === 1 ? 'Disposisikan' : 'Sudah didisposisikan'}
             </Button>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
+            <AlertSnackbar message={message} status={statusAddPosisi} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <Modal
                 open={open}
                 onClose={handleClose}

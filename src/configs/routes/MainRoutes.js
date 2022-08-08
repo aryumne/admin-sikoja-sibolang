@@ -11,6 +11,7 @@ const Dashboard = Loadable(React.lazy(() => import('../../pages/main/dashboard')
 const Sikoja = Loadable(React.lazy(() => import('../../pages/main/sikoja')));
 const DetailSikoja = Loadable(React.lazy(() => import('../../pages/main/sikoja/detail')));
 const Sibolang = Loadable(React.lazy(() => import('../../pages/main/sibolang')));
+const DetailSibolang = Loadable(React.lazy(() => import('../../pages/main/sibolang/detail')));
 const User = Loadable(React.lazy(() => import('../../pages/main/user')));
 const Instance = Loadable(React.lazy(() => import('../../pages/main/master/Instance')));
 const Village = Loadable(React.lazy(() => import('../../pages/main/master/Village')));
@@ -46,7 +47,16 @@ const MainRoutes = {
         },
         {
             path: 'sibolang',
-            element: <Sibolang />,
+            children: [
+                {
+                    path: '',
+                    element: <Sibolang />
+                },
+                {
+                    path: ':id',
+                    element: <DetailSibolang />
+                },
+            ]
         },
         {
             path: 'user',

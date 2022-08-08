@@ -15,16 +15,16 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadSkeleton from './LoadSkeleton';
 import MainData from './MainData';
-import GalerySikoja from './GalerySikoja';
+import GalerySibolang from './GalerySibolang';
 import ModalDisposisi from './ModalDisposisi';
 import ModalUpdateInstance from './ModalUpdateInstance';
 import ModalTindakLanjut from './ModalTindakLanjut';
 
 
-const DetailSikoja = () => {
+const DetailSibolang = () => {
     const params = useParams();
-    const [sikoja, setSikoja] = useState([]);
-    const [disp, setDisp] = useState([]);
+    const [sibolang, setSibolang] = useState([]);
+    const [disp, setDispSibolang] = useState([]);
     const [data, setData] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
     const roleId = localStorage.getItem('role');
@@ -42,23 +42,23 @@ const DetailSikoja = () => {
         }
     }
     useEffect(() => {
-        APIGETONE.GetSikoja(params.id).then(result => {
-            setSikoja(result)
+        APIGETONE.GetSibolang(params.id).then(result => {
+            setSibolang(result)
             setIsLoading(false)
             setData(result[0].id)
         }).catch(error => {
         })
     }, [])
     useEffect(() => {
-        APIGETONE.GetDisp(params.id).then(result => {
-            setDisp(result)
+        APIGETONE.GetSibolangDisp(params.id).then(result => {
+            setDispSibolang(result)
         }).catch(error => {
         })
     }, [])
 
     return (
         !isLoading ? (
-            sikoja.map((item) => (
+            sibolang.map((item) => (
                 <Grid key={item.id} container spacing={1} rowSpacing={1}>
                     <Grid item lg={5} md={6} sm={12} >
                         <Card>
@@ -180,7 +180,7 @@ const DetailSikoja = () => {
                                                     </List>
                                                     {
                                                         roleId != 2 ? (
-                                                            <ModalTindakLanjut dispFiles={dis.file.length} disId={dis.id} instanceID={dis.isntance_id} sikojaId={item.id} start={dis.start_date} estimation={dis.estimation_date} description={dis.description} status={item.status_id} />
+                                                            <ModalTindakLanjut dispFiles={dis.file_sibolangdisp.length} disId={dis.id} instanceID={dis.isntance_id} sibolangId={item.id} start={dis.start_date} estimation={dis.estimation_date} description={dis.description} status={item.status_id} />
                                                         ) : ''
                                                     }
                                                 </div>
@@ -193,7 +193,7 @@ const DetailSikoja = () => {
                                                     </Typography>
                                                     {
                                                         roleId != 2 ? (
-                                                            <ModalTindakLanjut dispFiles={dis.file.length} instanceID={dis.isntance_id} disId={dis.id} sikojaId={item.id} description={dis.description} status={item.status_id} />
+                                                            <ModalTindakLanjut dispFiles={dis.file_sibolangdisp.length} instanceID={dis.isntance_id} disId={dis.id} sibolangId={item.id} description={dis.description} status={item.status_id} />
                                                         ) : ''
                                                     }
                                                 </div>
@@ -214,7 +214,7 @@ const DetailSikoja = () => {
                                 <Typography variant='h6' fontWeight='bold' >
                                     Galery Laporan
                                 </Typography>
-                                <GalerySikoja item={item.galery} />
+                                <GalerySibolang item={item.galery_sibolang} />
                             </CardContent>
                         </Card>
                         <Card sx={{ mt: 1 }}>
@@ -224,10 +224,10 @@ const DetailSikoja = () => {
                                 </Typography>
                                 {disp.length !== 0 ? (
                                     disp.map((dis) => {
-                                        if (dis.file.length !== 0) {
+                                        if (dis.file_sibolangdisp.length !== 0) {
                                             return (
                                                 disp.map((dis) => (
-                                                    <GalerySikoja key={dis} item={dis.file} />
+                                                    <GalerySibolang key={dis} item={dis.file_sibolangdisp} />
                                                 ))
                                             )
                                         } else {
@@ -254,4 +254,4 @@ const DetailSikoja = () => {
     )
 }
 
-export default DetailSikoja
+export default DetailSibolang

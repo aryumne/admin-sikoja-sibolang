@@ -13,6 +13,8 @@ const GetAll = (path) => {
 
 const Sikojas = () => GetAll('sikoja');
 const SikojaDisps = () => GetAll('sikojadisp');
+const Sibolangs = () => GetAll('sibolang');
+const SibolangDisps = () => GetAll('sibolangdisp');
 const Instances = () => GetAll('instance');
 const Users = () => GetAll('user');
 const Villages = () => GetAll('village');
@@ -22,6 +24,8 @@ const Status = () => GetAll('status');
 const APIGETALL = {
     Sikojas,
     SikojaDisps,
+    Sibolangs,
+    SibolangDisps,
     Villages,
     Streets,
     Users,

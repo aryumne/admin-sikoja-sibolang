@@ -39,32 +39,34 @@ const ModalUpdateInstance = (props) => {
     const [message, setMessage] = useState('Pihak Berwenang berhasil diubah!');
     const [status, setStatus] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
-
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     useEffect(() => {
         APIGETALL.Instances().then(result => {
             setInstances(result)
+        }).catch(error => {
+            console.log(error)
         })
     }, [])
 
     const handleOnSelected = (event, newValue) => {
         const id = newValue.id;
         setData({ instance_id: id })
+        console.log(data);
     }
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setOpen(false)
         setOpenBackdrop(true)
-        APIPATCH.UpdateDisposition(disId, data).then(() => {
+        APIPATCH.UpdateDispositionSibolang(disId, data).then(() => {
             setStatus(true)
             setOpenSnackbar(true)
             setTimeout(() => {
                 window.location.reload()
             }, 1500)
-        }).catch(error => {
+        }).catch(() => {
             setMessage('Gagal menyimpan data, coba lagi!')
             setStatus(false)
             setOpenSnackbar(true)

@@ -95,7 +95,7 @@ const MainData = (props) => {
                             variant="body2"
                             color="text.primary"
                         >
-                            {item.village.village}
+                            {item.village ? item.village.village : ''}
                         </Typography>
                     }
                 />
@@ -105,7 +105,7 @@ const MainData = (props) => {
                 <ListItemText
                     primary={
                         <Typography varian="body1" fontWeight='medium'>
-                            Nama Jalan
+                            Kategori Pengaduan
                         </Typography>
                     }
                     secondary={
@@ -115,7 +115,7 @@ const MainData = (props) => {
                             variant="body2"
                             color="text.primary"
                         >
-                            {item.street ? item.street.street : 'tidak ada'}
+                            {item.category.category}
                         </Typography>
                     }
                 />

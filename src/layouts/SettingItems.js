@@ -35,7 +35,7 @@ const SettingItems = () => {
 
     return (
         <Box sx={{ flexGrow: 0 }}>
-            <Typography color='inherit' sx={{ display: 'inline' }}>
+            <Typography color='inherit' sx={{ display: { lg: 'inline', xs: 'none' } }}>
                 {name}
             </Typography>
             <Tooltip title="Open settings">

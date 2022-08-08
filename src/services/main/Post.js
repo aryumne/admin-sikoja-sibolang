@@ -15,6 +15,7 @@ const SignOut = (data) => Post('logout', data);
 const SendEmailVerification = (data) => Post('resend-verify-email', data);
 const VerifyEmail = (data) => Post('verify-email', data);
 const StoreDispo = (data) => Post('sikojadisp', data);
+const StoreDispoSibolang = (data) => Post('sibolangdisp', data);
 const NewInstance = (data) => Post('instance', data);
 const NewVillage = (data) => Post('village', data);
 const NewStreet = (data) => Post('street', data);
@@ -25,6 +26,7 @@ const APIPOST = {
     SendEmailVerification,
     VerifyEmail,
     StoreDispo,
+    StoreDispoSibolang,
     NewInstance,
     NewVillage,
     NewStreet,

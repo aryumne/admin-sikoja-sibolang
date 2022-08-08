@@ -45,7 +45,7 @@ const columns = [
     { field: 'description', headerName: 'Keterangan', width: 250 },
     { field: 'name', headerName: 'Pelapor', width: 200 },
     { field: 'kampung', headerName: 'Kampung', width: 170, valueGetter: (params) => params.row.village ? `${params.row.village.village || ''}` : '' },
-    { field: 'street', headerName: 'Jalan', width: 250, valueGetter: (params) => params.row.street ? `${params.row.street.street}` : '' },
+    { field: 'street', headerName: 'Jalan', width: 250, valueGetter: (params) => params.row.street ? `${params.row.street.street}` : '-' },
 ];
 
 
@@ -63,16 +63,12 @@ const Sikoja = () => {
                 setData(newResult);
                 console.log(newResult)
                 setOpenBackDrop(false)
-            }).catch(error => {
-                console.log(error.message)
-            })
+            }).catch(() => { })
         } else {
             APIGETALL.Sikojas().then(result => {
                 setData(result)
                 setOpenBackDrop(false)
-            }).catch(error => {
-                console.log(error.message)
-            })
+            }).catch(() => { })
         }
     }, [])
     return (

@@ -15,10 +15,14 @@ const GetOne = (path) => {
 
 const GetSikoja = (id) => GetOne('sikoja/' + id);
 const GetDisp = (id) => GetOne('sikojadisp/' + id);
+const GetSibolang = (id) => GetOne('sibolang/' + id);
+const GetSibolangDisp = (id) => GetOne('sibolangdisp/' + id);
 
 const APIGETONE = {
     GetSikoja,
-    GetDisp
+    GetDisp,
+    GetSibolang,
+    GetSibolangDisp,
 }
 
 export default APIGETONE

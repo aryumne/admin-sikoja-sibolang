@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import APIGETALL from '../../../../services/main/GetAll';
 import Autocomplete from '@mui/material/Autocomplete';
+import APIPOST from '../../../../services/main/Post';
 import APIPATCH from '../../../../services/main/Patch';
 import LoadingBackDrop from '../../../../components/LoadingBackDrop';
 import AlertSnackbar from '../../../../components/AlertSnackbar';
@@ -30,15 +31,16 @@ const style = {
 };
 
 
-const ModalUpdateInstance = (props) => {
-    const { disId, description, instanceId } = props;
+const ModalDisposisi = (props) => {
+    const { status, instanceid } = props;
     const [instances, setInstances] = useState([]);
-    const [data, setData] = useState({ instance_id: instanceId })
+    const [data, setData] = useState({ instance_id: null, sibolang_id: instanceid })
     const [open, setOpen] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
-    const [message, setMessage] = useState('Pihak Berwenang berhasil diubah!');
-    const [status, setStatus] = useState(true);
+    const [message, setMessage] = useState('Disposisi laporan berhasil!');
+    const [statusAddPosisi, setStatusAddPosisi] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -46,27 +48,35 @@ const ModalUpdateInstance = (props) => {
     useEffect(() => {
         APIGETALL.Instances().then(result => {
             setInstances(result)
+        }).catch(error => {
+            console.log(error)
         })
     }, [])
 
     const handleOnSelected = (event, newValue) => {
         const id = newValue.id;
-        setData({ instance_id: id })
+        setData({ ...data, instance_id: id })
     }
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setOpen(false)
         setOpenBackdrop(true)
-        APIPATCH.UpdateDisposition(disId, data).then(() => {
-            setStatus(true)
+        APIPOST.StoreDispoSibolang(data).then(() => {
+            setStatusAddPosisi(true)
             setOpenSnackbar(true)
-            setTimeout(() => {
-                window.location.reload()
-            }, 1500)
-        }).catch(error => {
+        }).then(() => {
+            APIPATCH.UpdateStatusSibolang(data.sibolang_id, { status_id: 2 }).then(() => {
+                setMessage('Status Laporan update!')
+                setStatusAddPosisi(true)
+                setOpenSnackbar(true)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500)
+            })
+        }).catch(() => {
             setMessage('Gagal menyimpan data, coba lagi!')
-            setStatus(false)
+            setStatusAddPosisi(false)
             setOpenSnackbar(true)
             setOpenBackdrop(false)
         })
@@ -74,11 +84,11 @@ const ModalUpdateInstance = (props) => {
 
     return (
         <>
-            <Button variant='outlined' disabled={description === null ? false : true} onClick={handleOpen}>
-                {description === null ? 'Edit' : 'Telah ditindaklanjuti'}
+            <Button variant='outlined' disabled={status === 1 ? false : true} onClick={handleOpen}>
+                {status === 1 ? 'Disposisikan' : 'Sudah didisposisikan'}
             </Button>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
-            <AlertSnackbar message={message} status={status} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
+            <AlertSnackbar message={message} status={statusAddPosisi} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -111,4 +121,4 @@ const ModalUpdateInstance = (props) => {
     )
 }
 
-export default ModalUpdateInstance
+export default ModalDisposisi

@@ -12,7 +12,9 @@ const Patch = (path, data) => {
 }
 
 const UpdateStatusSikoja = (id, data) => Patch('updateStatus/' + id, data);
+const UpdateStatusSibolang = (id, data) => Patch('updateStatusSibolang/' + id, data);
 const UpdateDisposition = (id, data) => Patch('sikojadisp/' + id, data);
+const UpdateDispositionSibolang = (id, data) => Patch('sibolangdisp/' + id, data);
 const UpdateInstance = (id, data) => Patch('instance/' + id, data);
 const UpdateVillage = (id, data) => Patch('village/' + id, data);
 const UpdateStreet = (id, data) => Patch('street/' + id, data);
@@ -22,6 +24,8 @@ const UpdateUser = (id, data) => Patch('user/' + id, data);
 const APIPATCH = {
     UpdateStatusSikoja,
     UpdateDisposition,
+    UpdateStatusSibolang,
+    UpdateDispositionSibolang,
     UpdateInstance,
     UpdateVillage,
     UpdateStreet,

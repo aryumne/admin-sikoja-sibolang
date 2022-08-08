@@ -43,7 +43,7 @@ const style = {
 };
 
 const ModalTindakLanjut = (props) => {
-    const { disId, description, status, start, estimation, sikojaId, dispFiles, instanceID } = props;
+    const { disId, description, status, start, estimation, sibolangId, dispFiles, instanceID } = props;
     const initializeDisp = {
         instance_id: instanceID,
         description: description,
@@ -111,15 +111,15 @@ const ModalTindakLanjut = (props) => {
         } else {
             setOpen(false)
             setOpenBackdrop(true)
-            APIPATCH.UpdateDisposition(disId, data).then(() => {
+            APIPATCH.UpdateDispositionSibolang(disId, data).then(() => {
                 setCodeStatus(true)
                 setOpenSnackbar(true)
             }).then(() => {
-                APIPATCH.UpdateStatusSikoja(sikojaId, { status_id: 3 }).then(() => {
+                APIPATCH.UpdateStatusSibolang(sibolangId, { status_id: 3 }).then(() => {
                     setMessage('Status laporan telah diupdate')
                     setCodeStatus(true)
                     setOpenSnackbar(true)
-                }).catch((error) => {
+                }).catch(() => {
                     setMessage('Gagal mengupdate status, coba lagi!')
                     setCodeStatus(false)
                     setOpenSnackbar(true)
@@ -129,15 +129,16 @@ const ModalTindakLanjut = (props) => {
                 for (let file of files) {
                     const data2 = new FormData();
                     data2.append('file', file)
-                    data2.append('sikojadisp_id', disId)
-                    APIUPLOAD.UploadFile(data2).then(result => {
+                    data2.append('sibolangdisp_id', disId)
+                    APIUPLOAD.UploadFileSibolang(data2).then(() => {
                         setMessage('Dokumentasi telah diupload!')
                         setCodeStatus(true)
                         setOpenSnackbar(true)
                         setTimeout(() => {
                             window.location.reload()
                         }, 1500)
-                    }).catch(error => {
+                    }).catch((error) => {
+                        console.log(error)
                         setMessage('Gagal mengupload gambar!')
                         setCodeStatus(false)
                         setOpenSnackbar(true)
@@ -147,7 +148,7 @@ const ModalTindakLanjut = (props) => {
                 setTimeout(() => {
                     window.location.reload()
                 }, 1500)
-            }).catch((error) => {
+            }).catch(() => {
                 setMessage('Gagal menyimpan perubahan, coba lagi!')
                 setCodeStatus(false)
                 setOpenSnackbar(true)
@@ -159,7 +160,7 @@ const ModalTindakLanjut = (props) => {
     const handleOnClick = (event) => {
         event.preventDefault();
         setOpenBackdrop(true);
-        APIPATCH.UpdateStatusSikoja(sikojaId, { status_id: 4 }).then(() => {
+        APIPATCH.UpdateStatusSibolang(sibolangId, { status_id: 4 }).then(() => {
             setMessage('Laporan selesai')
             setCodeStatus(true)
             setOpenSnackbar(true)

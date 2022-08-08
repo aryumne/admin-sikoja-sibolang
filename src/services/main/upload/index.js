@@ -41,9 +41,11 @@ const File = (path, data) => {
 }
 
 const UploadFile = (data) => File('uploadFile', data);
+const UploadFileSibolang = (data) => File('uploadFileSibolangdisp', data);
 
 const APIUPLOAD = {
     UploadFile,
+    UploadFileSibolang
 }
 
 
