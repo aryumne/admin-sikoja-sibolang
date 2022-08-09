@@ -243,7 +243,8 @@ const User = () => {
 
     useEffect(() => {
         APIGETALL.Users().then(result => {
-            setUsers(result)
+            const tempUsers = result.filter((user) => user.id !== 1);
+            setUsers(tempUsers)
         }).catch(error => {
             console.log(error.message)
         })
@@ -335,7 +336,7 @@ const User = () => {
             <Card>
                 <CardContent>
                     <Typography variant='h5' fontWeight='bold' paragraph>
-                        Daftar Instansi
+                        Daftar Pengguna
                     </Typography>
                     <div style={{ height: '73vh', width: '100%' }}>
                         <DataGrid

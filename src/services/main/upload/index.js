@@ -42,10 +42,14 @@ const File = (path, data) => {
 
 const UploadFile = (data) => File('uploadFile', data);
 const UploadFileSibolang = (data) => File('uploadFileSibolangdisp', data);
+const UploadStreet = (data) => File('uploadStreet', data);
+const UploadVillage = (data) => File('uploadVillage', data);
 
 const APIUPLOAD = {
     UploadFile,
-    UploadFileSibolang
+    UploadFileSibolang,
+    UploadStreet,
+    UploadVillage
 }
 
 

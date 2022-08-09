@@ -17,6 +17,7 @@ const Sibolangs = () => GetAll('sibolang');
 const SibolangDisps = () => GetAll('sibolangdisp');
 const Instances = () => GetAll('instance');
 const Users = () => GetAll('user');
+const Districts = () => GetAll('district');
 const Villages = () => GetAll('village');
 const Streets = () => GetAll('street');
 const Categories = () => GetAll('category');
@@ -26,6 +27,7 @@ const APIGETALL = {
     SikojaDisps,
     Sibolangs,
     SibolangDisps,
+    Districts,
     Villages,
     Streets,
     Users,

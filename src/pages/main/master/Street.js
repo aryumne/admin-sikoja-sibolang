@@ -14,6 +14,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import APIPOST from '../../../services/main/Post';
 import AlertSnackbar from '../../../components/AlertSnackbar';
+import APIUPLOAD from '../../../services/main/upload';
 
 
 const columns = [
@@ -21,7 +22,62 @@ const columns = [
     { field: 'street', headerName: 'Nama Jalan', flex: 1, editable: true },
 ];
 
-function AddToolBar() {
+const Import = () => {
+    const [open, setOpen] = React.useState(false);
+    const [file, setFile] = useState(null);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSubmit = () => {
+        const data = new FormData();
+        data.append('file', file)
+        APIUPLOAD.UploadStreet(data).then((result) => {
+            setOpen(false)
+            window.location.reload()
+        })
+    }
+
+    return (
+        <Container >
+            <Button variant="outlined" onClick={handleOpen}>
+                Import
+            </Button>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Subscribe</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Import file excel
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        type='file'
+                        margin="dense"
+                        id="file"
+                        name="file"
+                        label="Email Address"
+                        fullWidth
+                        variant="standard"
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleSubmit}>Upload</Button>
+                </DialogActions>
+            </Dialog>
+
+        </Container>
+    )
+
+}
+
+const AddToolBar = () => {
     const [newData, setNewData] = useState({ street: '' });
     const [open, setOpen] = React.useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -97,6 +153,7 @@ function AddToolBar() {
 }
 
 const Street = () => {
+    const role = localStorage.getItem('role')
     const [streets, setStreets] = useState([]);
     const [data, setData] = useState({ street: '' });
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -112,7 +169,6 @@ const Street = () => {
             setOpenBackdrop(false)
         }).catch(error => {
             setOpenBackdrop(false)
-            console.log(error.message)
         })
     }, [])
 
@@ -122,7 +178,7 @@ const Street = () => {
             setStatus(true)
             setOpenBackdrop(false)
             setOpenSnackbar(true)
-        }).catch(error => {
+        }).catch(() => {
             setMessage('Gagal menyimpan data, coba lagi!')
             setStatus(false)
             setOpenSnackbar(true)
@@ -141,7 +197,8 @@ const Street = () => {
                     <Typography variant='h5' fontWeight='bold' paragraph>
                         Daftar Nama Jalan
                     </Typography>
-                    <div style={{ height: '73vh', width: '100%' }}>
+                    {role == 1 ? (<Import />) : ''}
+                    <div style={{ height: '85vh', width: '100%' }}>
                         <DataGrid
                             editMode='row'
                             rows={streets}
