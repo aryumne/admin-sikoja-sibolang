@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -9,6 +9,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Alert from '@mui/material/Alert';
 import APIPOST from '../../services/main/Post';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const VerifyEmail = () => {
 
@@ -20,7 +22,7 @@ const VerifyEmail = () => {
     const [alert, setAlert] = React.useState(true);
     const [severity, setSeverity] = React.useState('success');
     const [message, setMessage] = React.useState('Cek email anda jika belum mendapatkan link verifikasi silahkan isi form dibawah!');
-    // const [openBackdrop, setOpenBackdrop] = React.useState(false);
+    const [openBackdrop, setOpenBackdrop] = React.useState(false);
 
     const handleOnChange = (event) => {
         let { name, value } = event.target;
@@ -29,15 +31,27 @@ const VerifyEmail = () => {
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        APIPOST.SendEmailVerification(data).then((response) => {
+        setOpenBackdrop(true)
+        APIPOST.SendEmailVerification(data).then(() => {
             setAlert(true)
             setSeverity('success')
             setMessage('Link Verifikasi telah dikirim ke email anda')
+            setOpenBackdrop(false)
         }).catch(error => {
+            setAlert(true)
+            setSeverity('error')
+            setOpenBackdrop(false)
+            if (error.status === 500) {
+                setMessage('email anda tidak terdaftar!')
+            }
             console.log(error)
-            setMessage(error.data.message)
         })
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) return window.history.back()
+    })
 
 
     return (
@@ -46,14 +60,21 @@ const VerifyEmail = () => {
             justifyContent: 'center',
             textAlign: 'center',
         }}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackdrop}
+                onClick={() => setOpenBackdrop(true)}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <CardContent>
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main', mx: 'auto' }}>
+                <Avatar sx={{ m: 1, bgcolor: 'secondary.main', mx: 'auto', mb: 2 }}>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" fontWeight={600} gutterBottom>
                     Verifikasi Email
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" color='text.secondary'>
                     Masukkan email yang terdaftar di akun anda!
                 </Typography>
                 <Alert severity={severity} sx={{ mt: 2, display: `${alert ? 'flex' : 'none'}` }} >{message}</Alert>

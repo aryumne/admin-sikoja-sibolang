@@ -18,9 +18,13 @@ const AuthLogin = (path, data) => {
 
 
 const Login = (data) => AuthLogin('login', data);
+const ForgotPassword = (data) => AuthLogin('forgot-password', data);
+const ResetPassword = (data) => AuthLogin('reset-password', data);
 
 const APIAUTH = {
-    Login
+    Login,
+    ForgotPassword,
+    ResetPassword
 }
 
 export default APIAUTH

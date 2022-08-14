@@ -1,13 +1,12 @@
 import { GetCookie } from "./GetCookieToken";
 import Cookies from 'universal-cookie';
+import { Navigate } from "react-router-dom";
 
 const cookie = new Cookies();
 
 
 export const SignIn = (res) => {
-    if (res.status === 200) {
-        window.location.href = '/verify-email'
-    }
+    localStorage.setItem('token', res.data.token)
     localStorage.setItem('username', res.data.user.username)
     localStorage.setItem('name', res.data.user.name)
     localStorage.setItem('role', res.data.user.role_id)
@@ -17,10 +16,8 @@ export const SignIn = (res) => {
     let date = new Date();
     date.setTime(date.getTime() + (60 * 60 * 1000));
     cookie.set('access_token', XSRF_COOKIE, { expires: date });
-    if (res.data.user.email_verified_at === null) {
-        return window.location.href = "/verify-email"
-    }
-    return window.location.href = "/login"
+    return res.data.user.email_verified_at === null
+        ? window.location.replace("/verify-email") : window.location.href = "/login"
 }
 
 

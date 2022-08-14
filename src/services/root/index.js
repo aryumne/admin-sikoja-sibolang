@@ -1,2 +1,2 @@
-export const URLROOT = 'http://103.185.50.121/';
-export const URLAPIROOT = 'http://103.185.50.121/api/';
+export const URLROOT = 'http://localhost:8000/';
+export const URLAPIROOT = 'http://localhost:8000/api/';

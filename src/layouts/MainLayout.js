@@ -16,6 +16,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainListItems, secondaryListItems } from './ListItems';
 import Copyright from './Copyright';
 import SettingItems from './SettingItems';
+import APIGETONEAUTH from '../services/main/GetOne';
+import { Logout } from '../utils/Auth';
 
 
 
@@ -70,9 +72,16 @@ const mdTheme = createTheme();
 const MainLayout = () => {
     const [open, setOpen] = React.useState(true);
     const roleId = localStorage.getItem('role');
+    const username = localStorage.getItem('username');
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+    useEffect(() => {
+        APIGETONEAUTH.GetUser(username).then(() => { }).catch((error) => {
+            Logout()
+        })
+    }, [])
 
     return (
         <ThemeProvider theme={mdTheme}>
