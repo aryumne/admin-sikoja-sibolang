@@ -13,6 +13,10 @@ const HTTPMAIN = () => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-XSRF-TOKEN': decodeURIComponent(cookie),
+            'Access-Control-Allow-Origin': '.mkwlapor.com',
+            'Cache-Control': 'no-cache',
+            'Fragma': 'no-cache',
+            'Expires': '0'
         }
     })
     http.interceptors.response.use(response => response, error => {

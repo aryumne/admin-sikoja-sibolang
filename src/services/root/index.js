@@ -1,2 +1,2 @@
-export const URLROOT = 'http://localhost:8000/';
-export const URLAPIROOT = 'http://localhost:8000/api/';
+export const URLROOT = 'https://api.mkwlapor.com/';
+export const URLAPIROOT = 'https://api.mkwlapor.com/api/';
