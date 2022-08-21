@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 
 const cookies = new Cookies();
 const token = cookies.get("access_token");
+const role = localStorage.getItem("role");
 
 const Dashboard = Loadable(React.lazy(() => import('../../pages/main/dashboard')));
 const Sikoja = Loadable(React.lazy(() => import('../../pages/main/sikoja')));
@@ -60,27 +61,27 @@ const MainRoutes = {
         },
         {
             path: 'user',
-            element: <User />,
+            element: role <= 2 ? <User /> : <Navigate to='/forbidden' replace />,
         },
         {
             path: 'instance',
-            element: <Instance />,
+            element: role <= 2 ? <Instance /> : <Navigate to='/forbidden' replace />,
         },
         {
             path: 'village',
-            element: <Village />,
+            element: role <= 2 ? <Village /> : <Navigate to='/forbidden' replace />,
         },
         {
             path: 'street',
-            element: <Street />,
+            element: role <= 2 ? <Street /> : < Navigate to='/forbidden' replace />,
         },
         {
             path: 'category',
-            element: <Category />,
+            element: role <= 2 ? <Category /> : <Navigate to='/forbidden' replace />,
         },
         {
             path: 'status',
-            element: <Status />,
+            element: role <= 2 ? <Status /> : <Navigate to='/forbidden' replace />,
         },
 
     ]
