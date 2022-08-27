@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -15,7 +15,6 @@ import { Input } from '../../../../components/Moment';
 import Stack from '@mui/material/Stack';
 import { useDropzone } from 'react-dropzone';
 import ReactPlayer from 'react-player';
-import Slide from '@mui/material/Slide';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import ImageList from '@mui/material/ImageList';
@@ -72,7 +71,9 @@ const ModalTindakLanjut = (props) => {
         },
         maxFiles: 4,
         maxSize: 10240000,
-
+        minSize: 1,
+        noClick: true,
+        useFsAccessApi: false,
     });
 
     const thumbs = files.length !== 0 ? (
@@ -102,6 +103,28 @@ const ModalTindakLanjut = (props) => {
         const { name, value } = event.target;
         setData({ ...data, [name]: value })
     }
+
+    const save = async () => {
+        try {
+            await APIPATCH.UpdateDisposition(disId, data);
+            await APIPATCH.UpdateStatusSikoja(sikojaId, { status_id: 3 });
+            await Promise.all(files.map(async (file) => {
+                const data = new FormData();
+                data.append('file', file);
+                data.append('sikojadisp_id', disId);
+                await APIUPLOAD.UploadFile(data);
+            }))
+            setMessage('Status laporan telah diupdate')
+            setCodeStatus(true)
+            setOpenSnackbar(true)
+            window.location.reload()
+        } catch (e) {
+            setMessage('Gagal menyimpan perubahan, coba lagi!')
+            setCodeStatus(false)
+            setOpenSnackbar(true)
+            setOpenBackdrop(false)
+        }
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
         if (anyFiles < 1) {
@@ -111,48 +134,7 @@ const ModalTindakLanjut = (props) => {
         } else {
             setOpen(false)
             setOpenBackdrop(true)
-            APIPATCH.UpdateDisposition(disId, data).then(() => {
-                setCodeStatus(true)
-                setOpenSnackbar(true)
-            }).then(() => {
-                APIPATCH.UpdateStatusSikoja(sikojaId, { status_id: 3 }).then(() => {
-                    setMessage('Status laporan telah diupdate')
-                    setCodeStatus(true)
-                    setOpenSnackbar(true)
-                }).catch((error) => {
-                    setMessage('Gagal mengupdate status, coba lagi!')
-                    setCodeStatus(false)
-                    setOpenSnackbar(true)
-                    setOpenBackdrop(false)
-                })
-            }).then(() => {
-                for (let file of files) {
-                    const data2 = new FormData();
-                    data2.append('file', file)
-                    data2.append('sikojadisp_id', disId)
-                    APIUPLOAD.UploadFile(data2).then(result => {
-                        setMessage('Dokumentasi telah diupload!')
-                        setCodeStatus(true)
-                        setOpenSnackbar(true)
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 1500)
-                    }).catch(error => {
-                        setMessage('Gagal mengupload gambar!')
-                        setCodeStatus(false)
-                        setOpenSnackbar(true)
-                        setOpenBackdrop(false)
-                    })
-                }
-                setTimeout(() => {
-                    window.location.reload()
-                }, 1500)
-            }).catch((error) => {
-                setMessage('Gagal menyimpan perubahan, coba lagi!')
-                setCodeStatus(false)
-                setOpenSnackbar(true)
-                setOpenBackdrop(false)
-            })
+            save()
         }
     }
 
@@ -166,7 +148,7 @@ const ModalTindakLanjut = (props) => {
             setTimeout(() => {
                 window.location.reload()
             }, 1500)
-        }).catch((error) => {
+        }).catch(() => {
             setMessage('Gagal mengupdate status, coba lagi!')
             setCodeStatus(false)
             setOpenSnackbar(true)
@@ -174,12 +156,21 @@ const ModalTindakLanjut = (props) => {
         })
     }
 
+    const handleChangeFile = (e) => {
+        const acceptedFiles = Object.values(e.target.files);
+        setFiles(acceptedFiles.map(file => Object.assign(file, {
+            preview: URL.createObjectURL(file)
+        })));
+        setAnyFiles(files.length + 1)
+    }
+
+
     return (
         <>
             <Button variant='outlined' disabled={status === 4 ? true : false} color='success' onClick={handleOpen} sx={{ display: status === 4 ? 'none' : 'inline' }}>
                 {description === null ? 'Tambah Keterangan' : 'Edit'}
             </Button>
-            <Button variant='contained' disabled={status === 4 ? true : false} onClick={handleOnClick} sx={{ ml: 1 }}>
+            <Button variant='contained' disabled={status === 4 ? true : false} onClick={handleOnClick} sx={{ ml: { lg: 1, md: 1 }, mt: { xs: 1, sm: 1, md: 0 } }}>
                 Selesai
             </Button>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
@@ -194,7 +185,7 @@ const ModalTindakLanjut = (props) => {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2" paragraph>
-                        {description === null ? 'Tambahkan' : 'Ubah '}keterangan tindaklanjut dari laporan ini.
+                        {description === null ? 'Tambahkan ' : 'Ubah '}keterangan tindaklanjut dari laporan ini.
                     </Typography>
                     <form onSubmit={handleSubmit}>
                         <FormControl fullWidth>
@@ -216,8 +207,8 @@ const ModalTindakLanjut = (props) => {
                                         onChange={handleChange}
                                     />
                                     <Grid container >
-                                        <Grid container columnSpacing={1}>
-                                            <Grid item lg={6} md={12} sm={12}>
+                                        <Grid container columnSpacing={1} rowSpacing={2}>
+                                            <Grid item lg={6} md={12} xs={12}>
                                                 <DateTimePicker
                                                     id="start_date"
                                                     name="start_date"
@@ -229,7 +220,7 @@ const ModalTindakLanjut = (props) => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item lg={6} md={12} sm={12}>
+                                            <Grid item lg={6} md={12} xs={12}>
                                                 <DateTimePicker
                                                     id="estimation_date"
                                                     name="estimation_date"
@@ -243,13 +234,27 @@ const ModalTindakLanjut = (props) => {
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Paper sx={{ cursor: 'pointer', background: '#fafafa', color: '#bdbdbd', border: '1px dashed #ccc', '&:hover': { border: '1px solid #ccc' }, mt: 2 }}>
+                                    <Paper sx={{ cursor: 'pointer', background: '#fafafa', color: '#bdbdbd', border: '1px dashed #ccc', '&:hover': { border: '1px solid #ccc' }, mt: 2, pt: 2 }}>
+                                        <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Button
+                                                variant="text"
+                                                component="label"
+                                            >
+                                                Upload
+                                                <input
+                                                    type="file"
+                                                    hidden
+                                                    multiple
+                                                    onChange={handleChangeFile}
+                                                />
+                                            </Button>
+                                        </Container>
                                         <div style={{ padding: '20px', height: 'auto' }} {...getRootProps()}>
                                             {isDragActive ? (
                                                 <Typography align='center' variant='subtitle1' color='primary.main'> Drop disini..</Typography>
                                             ) : (
                                                 <div>
-                                                    <Typography align='center' variant='subtitle1'>Drag & Drop atau klik untuk memilih gambar...</Typography>
+                                                    <Typography align='center' variant='subtitle1'>Drag & Drop atau klik Upload untuk memilih gambar...</Typography>
                                                     <Typography align='center' variant='subtitle1'>maksimal 4 file</Typography>
                                                 </div>
                                             )}
@@ -270,6 +275,7 @@ const ModalTindakLanjut = (props) => {
                                 </Stack>
                             </LocalizationProvider>
                         </FormControl>
+                        <Button type='button' variant='contained' color='grey' onClick={handleClose} sx={{ mt: 2, mr: 1 }}>Batal</Button>
                         <Button type='submit' variant='contained' sx={{ mt: 2 }}>Simpan</Button>
                     </form>
                 </Box>

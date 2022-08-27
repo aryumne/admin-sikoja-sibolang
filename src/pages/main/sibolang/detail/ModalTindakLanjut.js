@@ -72,6 +72,9 @@ const ModalTindakLanjut = (props) => {
         },
         maxFiles: 4,
         maxSize: 10240000,
+        minSize: 1,
+        noClick: true,
+        useFsAccessApi: false,
 
     });
 
@@ -102,58 +105,38 @@ const ModalTindakLanjut = (props) => {
         const { name, value } = event.target;
         setData({ ...data, [name]: value })
     }
+    const save = async () => {
+        try {
+            await APIPATCH.UpdateDispositionSibolang(disId, data);
+            await APIPATCH.UpdateStatusSibolang(sibolangId, { status_id: 3 });
+            await Promise.all(files.map(async (file) => {
+                const data = new FormData();
+                data.append('file', file);
+                data.append('sibolangdisp_id', disId);
+                await APIUPLOAD.UploadFileSibolang(data);
+            }))
+            setMessage('Status laporan telah diupdate')
+            setCodeStatus(true)
+            setOpenSnackbar(true)
+            window.location.reload()
+        } catch (e) {
+            setMessage('Gagal menyimpan perubahan, coba lagi!')
+            setCodeStatus(false)
+            setOpenSnackbar(true)
+            setOpenBackdrop(false)
+        }
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         if (anyFiles < 1) {
-            setMessage('Upload gambar sebagai dokumentasi!')
-            setCodeStatus(false)
-            setOpenSnackbar(true)
+            setMessage('Upload gambar sebagai dokumentasi!');
+            setCodeStatus(false);
+            setOpenSnackbar(true);
         } else {
-            setOpen(false)
-            setOpenBackdrop(true)
-            APIPATCH.UpdateDispositionSibolang(disId, data).then(() => {
-                setCodeStatus(true)
-                setOpenSnackbar(true)
-            }).then(() => {
-                APIPATCH.UpdateStatusSibolang(sibolangId, { status_id: 3 }).then(() => {
-                    setMessage('Status laporan telah diupdate')
-                    setCodeStatus(true)
-                    setOpenSnackbar(true)
-                }).catch(() => {
-                    setMessage('Gagal mengupdate status, coba lagi!')
-                    setCodeStatus(false)
-                    setOpenSnackbar(true)
-                    setOpenBackdrop(false)
-                })
-            }).then(() => {
-                for (let file of files) {
-                    const data2 = new FormData();
-                    data2.append('file', file)
-                    data2.append('sibolangdisp_id', disId)
-                    APIUPLOAD.UploadFileSibolang(data2).then(() => {
-                        setMessage('Dokumentasi telah diupload!')
-                        setCodeStatus(true)
-                        setOpenSnackbar(true)
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 1500)
-                    }).catch((error) => {
-                        console.log(error)
-                        setMessage('Gagal mengupload gambar!')
-                        setCodeStatus(false)
-                        setOpenSnackbar(true)
-                        setOpenBackdrop(false)
-                    })
-                }
-                setTimeout(() => {
-                    window.location.reload()
-                }, 1500)
-            }).catch(() => {
-                setMessage('Gagal menyimpan perubahan, coba lagi!')
-                setCodeStatus(false)
-                setOpenSnackbar(true)
-                setOpenBackdrop(false)
-            })
+            setOpen(false);
+            setOpenBackdrop(true);
+            save();
         }
     }
 
@@ -167,7 +150,7 @@ const ModalTindakLanjut = (props) => {
             setTimeout(() => {
                 window.location.reload()
             }, 1500)
-        }).catch((error) => {
+        }).catch(() => {
             setMessage('Gagal mengupdate status, coba lagi!')
             setCodeStatus(false)
             setOpenSnackbar(true)
@@ -175,12 +158,21 @@ const ModalTindakLanjut = (props) => {
         })
     }
 
+    const handleChangeFile = (e) => {
+        const acceptedFiles = Object.values(e.target.files);
+        setFiles(acceptedFiles.map(file => Object.assign(file, {
+            preview: URL.createObjectURL(file)
+        })));
+        setAnyFiles(files.length + 1)
+    }
+
+
     return (
         <>
             <Button variant='outlined' disabled={status === 4 ? true : false} color='success' onClick={handleOpen} sx={{ display: status === 4 ? 'none' : 'inline' }}>
                 {description === null ? 'Tambah Keterangan' : 'Edit'}
             </Button>
-            <Button variant='contained' disabled={status === 4 ? true : false} onClick={handleOnClick} sx={{ ml: 1 }}>
+            <Button variant='contained' disabled={status === 4 ? true : false} onClick={handleOnClick} sx={{ ml: { lg: 1, md: 1 }, mt: { xs: 1, sm: 1, md: 0 } }}>
                 Selesai
             </Button>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
@@ -195,7 +187,7 @@ const ModalTindakLanjut = (props) => {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2" paragraph>
-                        {description === null ? 'Tambahkan' : 'Ubah '}keterangan tindaklanjut dari laporan ini.
+                        {description === null ? 'Tambahkan ' : 'Ubah '}keterangan tindaklanjut dari laporan ini.
                     </Typography>
                     <form onSubmit={handleSubmit}>
                         <FormControl fullWidth>
@@ -217,8 +209,8 @@ const ModalTindakLanjut = (props) => {
                                         onChange={handleChange}
                                     />
                                     <Grid container >
-                                        <Grid container columnSpacing={1}>
-                                            <Grid item lg={6} md={12} sm={12}>
+                                        <Grid container columnSpacing={1} rowSpacing={2}>
+                                            <Grid item lg={6} md={12} xs={12}>
                                                 <DateTimePicker
                                                     id="start_date"
                                                     name="start_date"
@@ -230,7 +222,7 @@ const ModalTindakLanjut = (props) => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item lg={6} md={12} sm={12}>
+                                            <Grid item lg={6} md={12} xs={12}>
                                                 <DateTimePicker
                                                     id="estimation_date"
                                                     name="estimation_date"
@@ -244,7 +236,21 @@ const ModalTindakLanjut = (props) => {
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Paper sx={{ cursor: 'pointer', background: '#fafafa', color: '#bdbdbd', border: '1px dashed #ccc', '&:hover': { border: '1px solid #ccc' }, mt: 2 }}>
+                                    <Paper sx={{ cursor: 'pointer', background: '#fafafa', color: '#bdbdbd', border: '1px dashed #ccc', '&:hover': { border: '1px solid #ccc' }, mt: 2, pt: 2 }}>
+                                        <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Button
+                                                variant="text"
+                                                component="label"
+                                            >
+                                                Upload
+                                                <input
+                                                    type="file"
+                                                    hidden
+                                                    multiple
+                                                    onChange={handleChangeFile}
+                                                />
+                                            </Button>
+                                        </Container>
                                         <div style={{ padding: '20px', height: 'auto' }} {...getRootProps()}>
                                             {isDragActive ? (
                                                 <Typography align='center' variant='subtitle1' color='primary.main'> Drop disini..</Typography>

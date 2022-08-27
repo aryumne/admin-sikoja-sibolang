@@ -128,7 +128,7 @@ const MainLayout = () => {
                         }}
                     >
                         <Typography variant='h6' fontWeight='bold' textTransform='uppercase' align='left'>
-                            {roleId === 1 ? 'Superadmin' : roleId === 2 ? 'Admin' : 'Instansi'}
+                            {roleId == 1 ? 'Superadmin' : roleId == 2 ? 'Admin' : 'Instansi'}
                         </Typography>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
