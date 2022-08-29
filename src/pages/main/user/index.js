@@ -12,9 +12,9 @@ import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import APIPOST from '../../../services/main/Post';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -67,7 +67,11 @@ function AddToolBar(props) {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setNewData({ ...newData, [name]: value })
+        if (name === 'hp' && value.toString().length > 12) {
+            setNewData({ ...newData })
+        } else {
+            setNewData({ ...newData, [name]: value })
+        }
         setStatus(false)
     }
 
@@ -191,6 +195,7 @@ function AddToolBar(props) {
                             id="hp"
                             name="hp"
                             label="Nomor Hp"
+                            value={!newData.hp ? '' : newData.hp}
                             type="number"
                             fullWidth
                             variant="outlined"
@@ -294,6 +299,7 @@ const User = () => {
         { field: 'email', headerName: 'Email', flex: 1, editable: true },
         { field: 'instance', headerName: 'Asal Instansi', flex: 1, valueGetter: (params) => `${params.row.instance.instance}` },
         { field: 'role', headerName: 'Level Pengguna', flex: 1, valueGetter: (params) => `${params.row.role.role}` },
+        { field: 'hp', headerName: 'Nomor Hp', flex: 1, editable: true },
         {
             field: 'actions',
             type: 'actions',

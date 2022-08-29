@@ -44,17 +44,17 @@ const DetailSibolang = () => {
     useEffect(() => {
         APIGETONE.GetSibolang(params.id).then(result => {
             setSibolang(result)
-            setIsLoading(false)
             setData(result[0].id)
-        }).catch(error => {
-        })
-    }, [])
-    useEffect(() => {
-        APIGETONE.GetSibolangDisp(params.id).then(result => {
-            setDispSibolang(result)
-        }).catch(error => {
-        })
-    }, [])
+        }).then(() => {
+            APIGETONE.GetSibolangDisp(params.id).then(result => {
+                setDispSibolang(result)
+            })
+        }).catch(() => {
+            setDispSibolang(null);
+        }).finally(() => {
+            setIsLoading(false)
+        });
+    }, []);
 
     return (
         !isLoading ? (

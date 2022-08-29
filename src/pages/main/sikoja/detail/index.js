@@ -44,17 +44,17 @@ const DetailSikoja = () => {
     useEffect(() => {
         APIGETONE.GetSikoja(params.id).then(result => {
             setSikoja(result)
-            setIsLoading(false)
             setData(result[0].id)
-        }).catch(error => {
-        })
-    }, [])
-    useEffect(() => {
-        APIGETONE.GetDisp(params.id).then(result => {
-            setDisp(result)
-        }).catch(error => {
-        })
-    }, [])
+        }).then(() => {
+            APIGETONE.GetDisp(params.id).then(result => {
+                setDisp(result)
+            })
+        }).catch(() => {
+            setDisp(null);
+        }).finally(() => {
+            setIsLoading(false)
+        });
+    }, []);
 
     return (
         !isLoading ? (

@@ -15,7 +15,6 @@ import { Input } from '../../../../components/Moment';
 import Stack from '@mui/material/Stack';
 import { useDropzone } from 'react-dropzone';
 import ReactPlayer from 'react-player';
-import Slide from '@mui/material/Slide';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import ImageList from '@mui/material/ImageList';
@@ -23,6 +22,9 @@ import ImageListItem from '@mui/material/ImageListItem';
 import { Grid } from '@mui/material';
 import APIUPLOAD from '../../../../services/main/upload';
 import AlertSnackbar from '../../../../components/AlertSnackbar';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 const style = {
@@ -57,6 +59,7 @@ const ModalTindakLanjut = (props) => {
     const [message, setMessage] = useState('Data telah diupdate!');
     const [codeStatus, setCodeStatus] = useState(true);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
     const [files, setFiles] = useState([]);
     const { getRootProps, isDragActive } = useDropzone({
         onDrop: acceptedFiles => {
@@ -140,8 +143,9 @@ const ModalTindakLanjut = (props) => {
         }
     }
 
-    const handleOnClick = (event) => {
+    const handleFinishOk = (event) => {
         event.preventDefault();
+        setOpenDialog(false)
         setOpenBackdrop(true);
         APIPATCH.UpdateStatusSibolang(sibolangId, { status_id: 4 }).then(() => {
             setMessage('Laporan selesai')
@@ -158,6 +162,11 @@ const ModalTindakLanjut = (props) => {
         })
     }
 
+    const handleConfirm = () => {
+        setOpenDialog(true);
+    };
+
+
     const handleChangeFile = (e) => {
         const acceptedFiles = Object.values(e.target.files);
         setFiles(acceptedFiles.map(file => Object.assign(file, {
@@ -172,9 +181,25 @@ const ModalTindakLanjut = (props) => {
             <Button variant='outlined' disabled={status === 4 ? true : false} color='success' onClick={handleOpen} sx={{ display: status === 4 ? 'none' : 'inline' }}>
                 {description === null ? 'Tambah Keterangan' : 'Edit'}
             </Button>
-            <Button variant='contained' disabled={status === 4 ? true : false} onClick={handleOnClick} sx={{ ml: { lg: 1, md: 1 }, mt: { xs: 1, sm: 1, md: 0 } }}>
+            <Button variant='contained' disabled={status !== 3 ? true : false} onClick={handleConfirm} sx={{ ml: { lg: 1, md: 1 }, mt: { xs: 1, sm: 1, md: 0 } }}>
                 Selesai
             </Button>
+            <Dialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Apakah laporan ini telah selesai?
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)}>Belum</Button>
+                    <Button onClick={handleFinishOk} autoFocus>
+                        Selesai
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <LoadingBackDrop open={openBackdrop} onClick={() => setOpenBackdrop(true)} />
             <AlertSnackbar message={message} status={codeStatus} opensnackbar={openSnackbar} setOpensnackbar={setOpenSnackbar} />
             <Modal

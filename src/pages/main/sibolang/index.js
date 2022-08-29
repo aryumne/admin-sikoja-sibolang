@@ -30,22 +30,37 @@ const Status = (id) => {
 
 }
 
-const columns = [
-    { field: 'id', headerName: 'ID', hide: true, width: 0, },
-    { field: 'waktu', headerName: 'Tanggal', width: 130, valueGetter: (params) => `${Relative(params.row.created_at) || ''}` },
+const columnAdmin = [
+    { field: 'id', headerName: 'ID', hide: true, width: 30, },
+    { field: 'waktu', headerName: 'Tanggal', flex: 1, valueGetter: (params) => `${Relative(params.row.created_at) || ''}` },
     {
-        field: 'status', headerName: 'Status', width: 200, renderCell: (params) => {
+        field: 'status', headerName: 'Status', flex: 1, renderCell: (params) => {
             const statusId = params.row.status_id
             return (
                 <Chip label={Status(statusId).label} color={Status(statusId).color} variant="contained" size='small' />
             )
         }
     },
-    { field: 'title', headerName: 'Judul Pengaduan', width: 250 },
-    { field: 'description', headerName: 'Keterangan', width: 250 },
-    { field: 'name', headerName: 'Pelapor', width: 200 },
-    { field: 'kampung', headerName: 'Kampung', width: 170, valueGetter: (params) => params.row.village ? `${params.row.village.village || ''}` : '-' },
-    { field: 'category', headerName: 'Kategori', width: 250, valueGetter: (params) => params.row.category ? `${params.row.category.category}` : '' },
+    { field: 'title', headerName: 'Judul Pengaduan', flex: 1 },
+    { field: 'description', headerName: 'Keterangan', flex: 1 },
+    { field: 'name', headerName: 'Pelapor', flex: 1 },
+    { field: 'village', headerName: 'Kampung', flex: 1, valueGetter: (params) => params.row.village ? `${params.row.village.village || ''}` : '-' },
+    { field: 'category', headerName: 'Kategori', flex: 1, valueGetter: (params) => params.row.category ? `${params.row.category.category}` : '' },
+];
+const columnInstansi = [
+    { field: 'id', headerName: 'ID', hide: true, width: 30 },
+    { field: 'waktu', headerName: 'Tanggal', flex: 1, valueGetter: (params) => `${Relative(params.row.created_at) || ''}` },
+    {
+        field: 'status', headerName: 'Status', flex: 1, renderCell: (params) => {
+            const statusId = params.row.status_id
+            return (
+                <Chip label={Status(statusId).label} color={Status(statusId).color} variant="contained" size='small' />
+            )
+        }
+    },
+    { field: 'title', headerName: 'Judul Pengaduan', flex: 1 },
+    { field: 'description', headerName: 'Keterangan', flex: 1 },
+    { field: 'name', headerName: 'Pelapor', flex: 1 },
 ];
 
 
@@ -81,7 +96,7 @@ const Sibolang = () => {
                     <DataGrid
                         rows={data}
                         onRowClick={(item) => navigate(`${item.id}`)}
-                        columns={columns}
+                        columns={roleId < 3 ? columnAdmin : columnInstansi}
                         pageSize={10}
                         rowsPerPageOptions={[10]}
                     />
